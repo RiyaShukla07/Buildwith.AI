@@ -1,0 +1,30 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('',                              views.home,           name='home'),
+    path('signup/',                       views.signup_view,    name='signup'),
+    path('login/',                        views.login_view,     name='login'),
+    path('logout/',                       views.logout_view,    name='logout'),
+    path('dashboard/',                    views.dashboard,      name='dashboard'),
+    path('quests/',                       views.quest_list,     name='quest_list'),
+    path('quests/complete/<int:quest_id>/', views.complete_quest, name='complete_quest'),
+    path('quests/<int:quest_id>/',         views.quest_detail,   name='quest_detail'),
+    path('quests/<int:quest_id>/play/',    views.quest_play,     name='quest_play'),
+    path('quests/<int:quest_id>/step/<int:step_id>/submit/', views.submit_step, name='submit_step'),
+    path('quests/<int:quest_id>/step/<int:step_id>/hint/<int:hint_id>/', views.unlock_hint, name='unlock_hint'),
+    path('leaderboard/',                  views.leaderboard,    name='leaderboard'),
+    path('profile/',                      views.profile,        name='profile'),
+    path('delete-account/',               views.delete_account, name='delete_account'),
+    path('missions/',                     views.mission_list,   name='mission_list'),
+    path('missions/<int:mission_id>/',    views.mission_detail, name='mission_detail'),
+    path('skill-dna/',                    views.skill_dna,      name='skill_dna'),
+    path('daily-quest/',                  views.daily_quest,    name='daily_quest'),
+    path('xp-wallet/',                    views.xp_wallet,      name='xp_wallet'),
+    path('achievements/',                 views.achievements,   name='achievements'),
+    path('friends/',                      views.friends,        name='friends'),
+    path('friends/<str:action>/<int:user_id>/', views.friend_request_action, name='friend_request_action'),
+    path('ai-mentor/',                    views.ai_mentor,      name='ai_mentor'),
+    path('ai-mentor/chat/',               views.ai_chat,        name='ai_chat'),
+    path('settings/',                     views.settings_view,  name='settings'),
+]

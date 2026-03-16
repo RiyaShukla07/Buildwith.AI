@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <a href="{% url 'mission_list' %}" class="btn btn-sm btn-outline-light px-3">← All Missions</a>
+  <span style="background:rgba(99,102,241,0.15);color:var(--purple-light);border:1px solid rgba(99,102,241,0.25);padding:5px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;">
+    {{ mission.skill }}
+  </span>
+</div>
+
+<!-- Mission Header -->
+<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.04));border-color:rgba(99,102,241,0.25);">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold mb-2" style="color:var(--text);">{{ mission.title }}</h2>
+      <p class="mb-0" style="color:var(--text-muted);font-size:0.95rem;line-height:1.6;">{{ mission.description }}</p>
+    </div>
+    <div class="text-end flex-shrink-0">
+      <div style="color:var(--gold);font-size:1.5rem;font-weight:800;">⚡ {{ mission.xp_reward }} XP</div>
+      <div style="color:var(--text-dim);font-size:0.78rem;margin-top:2px;">awarded after review</div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Instructions -->
+<div class="card p-4 mb-4">
+  <h5 class="mb-3" style="color:var(--purple-light);">📋 Mission Brief</h5>
+  <div style="color:var(--text-muted);line-height:1.8;font-size:0.93rem;white-space:pre-line;">{{ mission.task }}</div>
+</div>
+
+<!-- Submission Section -->
+{% if existing %}
+  <div class="card p-4" style="border-color:
+    {% if existing.status == 'approved' %}rgba(52,211,153,0.3)
+    {% elif existing.status == 'rejected' %}rgba(248,113,113,0.3)
+    {% else %}rgba(251,191,36,0.3){% endif %};">
+
+    <h5 class="mb-3" style="color:
+      {% if existing.status == 'approved' %}#34d399
+      {% elif existing.status == 'rejected' %}#f87171
+      {% else %}var(--gold){% endif %};">
+      {% if existing.status == 'approved' %}✅ Mission Approved
+      {% elif existing.status == 'rejected' %}❌ Submission Rejected
+      {% else %}⏳ Submission Under Review{% endif %}
+    </h5>
+
+    <div class="row g-3 mb-3">
+      {% if existing.github_link %}
+      <div class="col-md-6">
+        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">GitHub Link</div>
+        <a href="{{ existing.github_link }}" target="_blank" style="color:var(--purple-light);font-size:0.9rem;word-break:break-all;">
+          🔗 {{ existing.github_link }}
+        </a>
+      </div>
+      {% endif %}
+      {% if existing.project_file %}
+      <div class="col-md-6">
+        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Uploaded File</div>
+        <a href="{{ existing.project_file.url }}" target="_blank" style="color:var(--purple-light);font-size:0.9rem;">
+          📁 Download File
+        </a>
+      </div>
+      {% endif %}
+      <div class="col-12">
+        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Your Notes</div>
+        <div style="color:var(--text);font-size:0.9rem;line-height:1.6;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;">
+          {{ existing.notes|default:"No notes provided." }}
+        </div>
+      </div>
+    </div>
+
+    <div style="color:var(--text-dim);font-size:0.78rem;">
+      Submitted {{ existing.submitted_at|date:"M d, Y · H:i" }}
+      {% if existing.reviewed_at %} · Reviewed {{ existing.reviewed_at|date:"M d, Y" }}{% endif %}
+    </div>
+
+    {% if existing.status == 'rejected' %}
+    <hr style="border-color:var(--border);margin:1.25rem 0;">
+    <h6 style="color:var(--text-muted);margin-bottom:1rem;">Resubmit your work</h6>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ field.errors }}</div>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-quest px-4">📤 Resubmit Mission</button>
+    </form>
+    {% endif %}
+  </div>
+
+{% else %}
+  <!-- Submit form -->
+  <div class="card p-4" style="border-color:rgba(99,102,241,0.2);">
+    <h5 class="mb-1" style="color:var(--text);">📤 Submit Your Work</h5>
+    <p class="mb-4" style="color:var(--text-muted);font-size:0.875rem;">Provide a GitHub link, upload your project file, or both. Describe what you built.</p>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:#fca5a5;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.875rem;">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label">GitHub Repository Link <span style="color:var(--text-dim);">(optional if uploading file)</span></label>
+        {{ form.github_link }}
+        {% if form.github_link.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.github_link.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Upload Project File <span style="color:var(--text-dim);">(optional if GitHub link provided)</span></label>
+        {{ form.project_file }}
+        {% if form.project_file.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.project_file.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Notes / Description</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.notes.errors }}</div>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-quest px-5 py-2" style="font-size:0.95rem;">
+        🚀 Submit Mission
+      </button>
+    </form>
+  </div>
+{% endif %}
+
+{% endblock %}

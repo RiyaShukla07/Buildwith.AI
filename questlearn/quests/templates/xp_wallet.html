@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">⚡ XP Wallet</h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:.9rem;">Every XP you've ever earned, in one place.</p>
+  </div>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.03));border-color:rgba(251,191,36,.2);">
+      <div style="font-size:2rem;">⚡</div>
+      <div style="color:var(--gold);font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ profile.xp }}</div>
+      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">Total XP</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.03));border-color:rgba(52,211,153,.2);">
+      <div style="font-size:2rem;">⚔️</div>
+      <div style="color:#34d399;font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ total_from_quests }}</div>
+      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">From Quests</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.03));border-color:rgba(99,102,241,.2);">
+      <div style="font-size:2rem;">🌍</div>
+      <div style="color:var(--purple-light);font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ total_from_missions }}</div>
+      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">From Missions</div>
+    </div>
+  </div>
+</div>
+
+<!-- Level progress -->
+<div class="card p-4 mb-4" style="border-color:rgba(99,102,241,.2);">
+  <div class="d-flex justify-content-between mb-2">
+    <span style="color:var(--purple-light);font-weight:600;font-size:.9rem;">Level {{ profile.level }} → Level {{ profile.level|add:1 }}</span>
+    <span style="color:var(--text-muted);font-size:.82rem;">{{ xp_to_next }} XP to go</span>
+  </div>
+  <div class="xp-bar"><div class="xp-fill" style="width:{{ xp_percent }}%"></div></div>
+</div>
+
+<!-- XP History -->
+<h5 class="section-title mb-3">📜 XP History</h5>
+<div class="card overflow-hidden" style="border-color:rgba(99,102,241,.15);">
+  {% for item in history %}
+  <div class="d-flex align-items-center gap-3 px-4 py-3" style="border-bottom:1px solid var(--border);">
+    <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;
+      {% if item.type == 'quest' %}background:rgba(52,211,153,.12);{% else %}background:rgba(99,102,241,.12);{% endif %}">
+      {% if item.type == 'quest' %}⚔️{% else %}🌍{% endif %}
+    </div>
+    <div class="flex-grow-1 overflow-hidden">
+      <div style="color:var(--text);font-weight:500;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ item.label }}</div>
+      <div style="color:var(--text-dim);font-size:.75rem;">{{ item.track }} · {{ item.date|date:"M d, Y" }}</div>
+    </div>
+    <div style="color:var(--gold);font-weight:700;font-size:.9rem;flex-shrink:0;">+{{ item.xp }} XP</div>
+  </div>
+  {% empty %}
+  <div class="text-center py-5" style="color:var(--text-muted);">No XP earned yet. Complete a quest to start!</div>
+  {% endfor %}
+</div>
+{% endblock %}

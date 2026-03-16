@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">👤 My Profile</h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;">Your stats and progress</p>
+  </div>
+  <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light px-3">← Dashboard</a>
+</div>
+
+<div class="row g-4">
+
+  <!-- Left: Avatar card -->
+  <div class="col-md-4 col-lg-3">
+    <div class="card p-4 text-center card-glow h-100 d-flex flex-column">
+      <div class="avatar-lg mb-3">{{ user.username|first|upper }}</div>
+      <h4 class="fw-bold mb-1" style="color:var(--text);">{{ user.username }}</h4>
+      <p class="mb-1" style="color:var(--text-muted);font-size:0.85rem;">{{ user.email }}</p>
+      <p class="mb-3" style="color:var(--text-dim);font-size:0.78rem;">Joined {{ user.date_joined|date:"M d, Y" }}</p>
+
+      <div style="border-top:1px solid var(--border);padding-top:1rem;">
+        <div class="row g-2 text-center">
+          <div class="col-4">
+            <div style="color:var(--purple-light);font-size:1.4rem;font-weight:800;">{{ profile.level }}</div>
+            <div style="color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;">Level</div>
+          </div>
+          <div class="col-4" style="border-left:1px solid var(--border);border-right:1px solid var(--border);">
+            <div style="color:var(--gold);font-size:1.4rem;font-weight:800;">{{ profile.xp }}</div>
+            <div style="color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;">XP</div>
+          </div>
+          <div class="col-4">
+            <div style="color:var(--red);font-size:1.4rem;font-weight:800;">{{ profile.streak }}</div>
+            <div style="color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;">Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-auto pt-4 d-flex flex-column gap-2">
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100" style="border-radius:10px;font-size:0.875rem;">
+          <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+        </a>
+        <button class="btn btn-danger w-100" style="border-radius:10px;font-size:0.875rem;" data-bs-toggle="modal" data-bs-target="#deleteModal">
+          <i class="fas fa-trash me-2"></i>Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Stats + Progress -->
+  <div class="col-md-8 col-lg-9">
+
+    <!-- XP Progress -->
+    <div class="card p-4 mb-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.04));border-color:rgba(99,102,241,0.25);">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span style="color:var(--purple-light);font-weight:600;font-size:0.9rem;">⚡ Progress to Level {{ profile.level|add:1 }}</span>
+        <span style="color:var(--text-muted);font-size:0.82rem;">{{ xp_to_next }} XP to go</span>
+      </div>
+      <div class="xp-bar">
+        <div class="xp-fill" style="width:{{ xp_percent }}%"></div>
+      </div>
+      <div class="d-flex justify-content-between mt-1">
+        <small style="color:var(--text-dim);">Level {{ profile.level }}</small>
+        <small style="color:var(--text-dim);">Level {{ profile.level|add:1 }}</small>
+      </div>
+    </div>
+
+    <!-- Quick stats row -->
+    <div class="row g-3 mb-3">
+      <div class="col-sm-4">
+        <div class="card p-3 text-center card-hover" style="background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(52,211,153,0.02));border-color:rgba(52,211,153,0.2);">
+          <div style="font-size:1.6rem;margin-bottom:0.3rem;">⚔️</div>
+          <div style="color:#34d399;font-size:1.6rem;font-weight:800;line-height:1;">{{ completed_count }}</div>
+          <div style="color:var(--text-muted);font-size:0.78rem;margin-top:0.2rem;">Quests Done</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card p-3 text-center card-hover" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(251,191,36,0.02));border-color:rgba(251,191,36,0.2);">
+          <div style="font-size:1.6rem;margin-bottom:0.3rem;">📋</div>
+          <div style="color:var(--gold);font-size:1.6rem;font-weight:800;line-height:1;">{{ total_quests }}</div>
+          <div style="color:var(--text-muted);font-size:0.78rem;margin-top:0.2rem;">Total Quests</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card p-3 text-center card-hover" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02));border-color:rgba(99,102,241,0.2);">
+          <div style="font-size:1.6rem;margin-bottom:0.3rem;">🏅</div>
+          <div style="color:var(--purple-light);font-size:1.6rem;font-weight:800;line-height:1;">#{{ rank }}</div>
+          <div style="color:var(--text-muted);font-size:0.78rem;margin-top:0.2rem;">Leaderboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill DNA CTA -->
+    <a href="{% url 'skill_dna' %}" class="card p-3 mb-3 d-flex flex-row align-items-center gap-3 card-hover" style="border-color:rgba(99,102,241,0.25);background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.04));text-decoration:none;">
+      <div style="font-size:2rem;flex-shrink:0;">🧬</div>
+      <div>
+        <div style="color:var(--text);font-weight:600;font-size:0.9rem;">View Your Skill DNA</div>
+        <div style="color:var(--text-muted);font-size:0.78rem;">Radar chart · Activity graph · Skill tree</div>
+      </div>
+      <i class="fas fa-chevron-right ms-auto" style="color:var(--text-dim);"></i>
+    </a>
+
+    <!-- Completed quests -->
+    {% if completed_quests %}
+    <h5 class="section-title mb-3">✅ Completed Quests</h5>
+    <div class="row g-2">
+      {% for cq in completed_quests %}
+      <div class="col-md-6">
+        <div class="card p-3 d-flex flex-row align-items-center gap-3" style="opacity:0.85;">
+          <div style="width:38px;height:38px;border-radius:10px;background:rgba(52,211,153,0.12);color:#34d399;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✓</div>
+          <div class="flex-grow-1 overflow-hidden">
+            <div style="color:var(--text);font-weight:600;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ cq.quest.title }}</div>
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <span class="badge-{{ cq.quest.difficulty }}" style="font-size:0.65rem;padding:2px 7px;">{{ cq.quest.difficulty|upper }}</span>
+              <span style="color:var(--gold);font-size:0.78rem;font-weight:600;">+{{ cq.quest.xp_reward }} XP</span>
+            </div>
+          </div>
+          <a href="{% url 'quest_detail' cq.quest.id %}" style="color:var(--purple-light);font-size:0.78rem;font-weight:600;flex-shrink:0;white-space:nowrap;">📖 Read</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-card2);border:1px solid rgba(248,113,113,0.3);border-radius:16px;">
+      <div class="modal-header" style="border-color:rgba(248,113,113,0.2);padding:1.25rem 1.5rem;">
+        <h5 class="modal-title" style="color:#fca5a5;font-weight:700;">⚠️ Delete Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);opacity:0.5;"></button>
+      </div>
+      <div class="modal-body" style="color:var(--text-muted);padding:1.25rem 1.5rem;line-height:1.6;">
+        This will permanently delete your account, all your XP, levels, and quest progress. <strong style="color:var(--text);">This cannot be undone.</strong>
+      </div>
+      <div class="modal-footer" style="border-color:rgba(248,113,113,0.2);padding:1rem 1.5rem;gap:0.75rem;">
+        <button type="button" class="btn btn-outline-light px-4" data-bs-dismiss="modal" style="border-radius:10px;">Cancel</button>
+        <form method="POST" action="{% url 'delete_account' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger px-4" style="border-radius:10px;">
+            <i class="fas fa-trash me-2"></i>Yes, delete everything
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

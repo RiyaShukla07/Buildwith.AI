@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">🌍 Real-World Missions</h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;">Apply your skills to real problems. Submit your work. Earn XP + impact.</p>
+  </div>
+  <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light px-3">← Dashboard</a>
+</div>
+
+<!-- How it works banner -->
+<div class="card p-4 mb-4 mt-3" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.05));border-color:rgba(99,102,241,0.25);">
+  <div class="row g-3 text-center">
+    <div class="col-6 col-md-3">
+      <div style="font-size:1.6rem;">🎯</div>
+      <div style="color:var(--text);font-weight:600;font-size:0.85rem;margin-top:4px;">Pick a Mission</div>
+      <div style="color:var(--text-muted);font-size:0.78rem;">Choose a real-world challenge</div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="font-size:1.6rem;">🛠️</div>
+      <div style="color:var(--text);font-weight:600;font-size:0.85rem;margin-top:4px;">Build It</div>
+      <div style="color:var(--text-muted);font-size:0.78rem;">Apply your skills hands-on</div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="font-size:1.6rem;">📤</div>
+      <div style="color:var(--text);font-weight:600;font-size:0.85rem;margin-top:4px;">Submit Work</div>
+      <div style="color:var(--text-muted);font-size:0.78rem;">GitHub link or file upload</div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div style="font-size:1.6rem;">⚡</div>
+      <div style="color:var(--text);font-weight:600;font-size:0.85rem;margin-top:4px;">Earn XP</div>
+      <div style="color:var(--text-muted);font-size:0.78rem;">XP awarded after review</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  {% for mission in missions %}
+  {% with sub=submissions|default_if_none:None %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card p-4 h-100 card-hover d-flex flex-column">
+
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <span style="background:rgba(99,102,241,0.15);color:var(--purple-light);border:1px solid rgba(99,102,241,0.25);padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;letter-spacing:0.5px;">
+          {{ mission.skill|upper }}
+        </span>
+        <span style="color:var(--gold);font-weight:700;font-size:0.9rem;">⚡ {{ mission.xp_reward }} XP</span>
+      </div>
+
+      <h6 class="fw-bold mb-2" style="color:var(--text);font-size:1rem;">{{ mission.title }}</h6>
+      <p class="flex-grow-1 mb-3" style="color:var(--text-muted);font-size:0.83rem;line-height:1.55;">{{ mission.description|truncatechars:100 }}</p>
+
+      <div class="mt-auto pt-2" style="border-top:1px solid var(--border);">
+        {% if mission.id in submitted_ids %}
+          {% with sub=submissions|dictsort:"mission_id" %}{% endwith %}
+          {% for mid, s in submissions.items %}{% if mid == mission.id %}
+            {% if s.status == 'approved' %}
+              <div class="d-flex align-items-center justify-content-between">
+                <span style="color:#34d399;font-size:0.82rem;font-weight:600;">✅ Approved — XP Awarded</span>
+                <a href="{% url 'mission_detail' mission.id %}" style="color:var(--purple-light);font-size:0.8rem;">View</a>
+              </div>
+            {% elif s.status == 'rejected' %}
+              <div class="d-flex align-items-center justify-content-between">
+                <span style="color:#f87171;font-size:0.82rem;font-weight:600;">❌ Rejected</span>
+                <a href="{% url 'mission_detail' mission.id %}" style="color:var(--purple-light);font-size:0.8rem;">Resubmit</a>
+              </div>
+            {% else %}
+              <div class="d-flex align-items-center justify-content-between">
+                <span style="color:var(--gold);font-size:0.82rem;font-weight:600;">⏳ Pending Review</span>
+                <a href="{% url 'mission_detail' mission.id %}" style="color:var(--purple-light);font-size:0.8rem;">View</a>
+              </div>
+            {% endif %}
+          {% endif %}{% endfor %}
+        {% else %}
+          <a href="{% url 'mission_detail' mission.id %}" class="btn btn-quest btn-sm w-100">
+            🚀 Start Mission
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+  {% empty %}
+  <div class="col-12">
+    <div class="card p-5 text-center" style="border-style:dashed;">
+      <div style="font-size:3rem;margin-bottom:1rem;">🌍</div>
+      <h5 style="color:var(--text-muted);">No missions available yet</h5>
+      <p style="color:var(--text-dim);font-size:0.875rem;">Check back soon or ask an admin to add missions.</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestLearn 🎮</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:#07071a; --bg-card:#0f0f2d; --bg-card2:#13132e;
+      --border:#1e1e4a; --border-glow:#3730a3;
+      --purple:#6366f1; --purple-light:#a78bfa; --purple-dark:#4f46e5;
+      --gold:#fbbf24; --red:#f87171; --green:#34d399;
+      --text:#e2e8f0; --text-muted:#94a3b8; --text-dim:#475569;
+      --sidebar-w:270px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg-primary);color:var(--text);font-family:'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(99,102,241,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+    a{text-decoration:none;}
+    /* ── TOPBAR ── */
+    .topbar{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(7,7,26,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:1rem;z-index:900;}
+    .topbar-brand{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px;white-space:nowrap;}
+    .hamburger{background:none;border:none;cursor:pointer;padding:6px 8px;border-radius:8px;color:var(--text-muted);font-size:1.1rem;transition:all .2s;flex-shrink:0;}
+    .hamburger:hover{background:rgba(99,102,241,.15);color:var(--text);}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:.75rem;}
+    .xp-pill{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:var(--gold);padding:4px 12px;border-radius:99px;font-size:.8rem;font-weight:600;}
+    .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff;border:2px solid rgba(99,102,241,.4);flex-shrink:0;}
+    .avatar-lg{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.5rem;color:#fff;border:3px solid rgba(99,102,241,.5);box-shadow:0 0 30px rgba(99,102,241,.3);margin:0 auto;}
+    /* ── SIDEBAR OVERLAY ── */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .sidebar-overlay.open{opacity:1;pointer-events:all;}
+    /* ── SIDEBAR DRAWER ── */
+    .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg-card2);border-right:1px solid var(--border);z-index:1001;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+    .sidebar.open{transform:translateX(0);}
+    /* sidebar header */
+    .sb-header{padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .sb-brand{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .sb-close{background:none;border:none;color:var(--text-muted);font-size:1rem;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;}
+    .sb-close:hover{background:rgba(248,113,113,.12);color:#f87171;}
+    /* user mini card */
+    .sb-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;flex-shrink:0;}
+    .sb-user-info .name{color:var(--text);font-weight:600;font-size:.875rem;}
+    .sb-user-info .xp{color:var(--gold);font-size:.75rem;font-weight:500;}
+    /* scrollable nav area */
+    .sb-nav{flex:1;overflow-y:auto;padding:.75rem .75rem 1rem;scrollbar-width:thin;scrollbar-color:var(--border-glow) transparent;}
+    /* section label */
+    .sb-section-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);padding:.6rem .6rem .3rem;margin-top:.25rem;}
+    /* nav item */
+    .sb-item{display:flex;align-items:center;gap:.75rem;padding:.55rem .75rem;border-radius:10px;color:var(--text-muted);font-size:.875rem;font-weight:500;cursor:pointer;transition:all .18s;position:relative;border:1px solid transparent;}
+    .sb-item:hover{background:rgba(99,102,241,.1);color:var(--text);border-color:rgba(99,102,241,.15);}
+    .sb-item.active{background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.1));color:var(--purple-light);border-color:rgba(99,102,241,.3);font-weight:600;}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:linear-gradient(180deg,#6366f1,#a78bfa);border-radius:0 3px 3px 0;}
+    .sb-item .sb-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .18s;}
+    .sb-item:hover .sb-icon,.sb-item.active .sb-icon{background:rgba(99,102,241,.2);}
+    .sb-item .sb-badge{margin-left:auto;background:rgba(99,102,241,.2);color:var(--purple-light);font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:99px;}
+    .sb-item .sb-badge-hot{margin-left:auto;background:rgba(248,113,113,.2);color:#f87171;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:99px;}
+    /* collapsible group */
+    .sb-group-toggle{display:flex;align-items:center;gap:.75rem;padding:.5rem .75rem;border-radius:10px;color:var(--text-dim);font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;cursor:pointer;transition:all .18s;user-select:none;}
+    .sb-group-toggle:hover{color:var(--text-muted);}
+    .sb-group-toggle .chevron{margin-left:auto;font-size:.65rem;transition:transform .25s;}
+    .sb-group-toggle.collapsed .chevron{transform:rotate(-90deg);}
+    .sb-group-body{overflow:hidden;transition:max-height .3s ease;}
+    /* divider */
+    .sb-divider{border:none;border-top:1px solid var(--border);margin:.5rem .75rem;}
+    /* sidebar footer */
+    .sb-footer{padding:.75rem 1.25rem;border-top:1px solid var(--border);flex-shrink:0;}
+    .sb-footer a{display:flex;align-items:center;gap:.6rem;color:var(--text-dim);font-size:.82rem;font-weight:500;padding:.45rem .5rem;border-radius:8px;transition:all .18s;}
+    .sb-footer a:hover{color:#f87171;background:rgba(248,113,113,.08);}
+    /* ── MAIN CONTENT ── */
+    .main-wrap{padding-top:58px;min-height:100vh;position:relative;z-index:1;}
+    .main-content{max-width:1100px;margin:0 auto;padding:1.75rem 1.25rem;}
+    /* ── CARDS ── */
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;transition:transform .2s,box-shadow .2s,border-color .2s;}
+    .card-hover:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(99,102,241,.2);border-color:var(--border-glow);}
+    .card-glow{box-shadow:0 0 0 1px rgba(99,102,241,.2),0 8px 32px rgba(99,102,241,.15);}
+    .stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .75rem;}
+    /* ── XP BAR ── */
+    .xp-bar{background:rgba(99,102,241,.15);border-radius:99px;height:10px;overflow:hidden;}
+    .xp-fill{background:linear-gradient(90deg,#6366f1,#a78bfa,#c4b5fd);border-radius:99px;height:10px;transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px rgba(99,102,241,.5);}
+    /* ── BUTTONS ── */
+    .btn-quest{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:.875rem;transition:all .2s;box-shadow:0 4px 15px rgba(99,102,241,.3);}
+    .btn-quest:hover{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.4);}
+    .btn-outline-light{border-radius:10px;font-weight:500;font-size:.875rem;}
+    /* ── BADGES ── */
+    .badge-easy  {background:rgba(6,95,70,.4);color:#6ee7b7;border:1px solid rgba(110,231,183,.2);padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;letter-spacing:.5px;}
+    .badge-medium{background:rgba(120,53,15,.4);color:#fcd34d;border:1px solid rgba(252,211,77,.2);padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;letter-spacing:.5px;}
+    .badge-hard  {background:rgba(127,29,29,.4);color:#fca5a5;border:1px solid rgba(252,165,165,.2);padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;letter-spacing:.5px;}
+    .badge-boss  {background:rgba(76,29,149,.4);color:#c4b5fd;border:1px solid rgba(196,181,253,.2);padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;letter-spacing:.5px;}
+    /* ── FORMS ── */
+    .form-control{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.65rem 1rem;font-size:.9rem;transition:all .2s;}
+    .form-control:focus{background:rgba(99,102,241,.06);border-color:var(--purple);color:var(--text);box-shadow:0 0 0 3px rgba(99,102,241,.15);}
+    .form-label{color:var(--text-muted);font-size:.85rem;font-weight:500;margin-bottom:.4rem;}
+    /* ── TABLE ── */
+    .table-dark{--bs-table-bg:transparent;--bs-table-hover-bg:rgba(99,102,241,.06);}
+    .table td,.table th{border-color:var(--border)!important;vertical-align:middle;}
+    /* ── DROPDOWN ── */
+    .dropdown-menu{background:var(--bg-card2);border:1px solid var(--border);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.4);padding:.4rem;min-width:180px;}
+    .dropdown-item{color:var(--text-muted);border-radius:8px;font-size:.875rem;font-weight:500;padding:.5rem .85rem;transition:all .15s;}
+    .dropdown-item:hover{background:rgba(99,102,241,.12);color:var(--text);}
+    .dropdown-divider{border-color:var(--border);margin:.3rem 0;}
+    .dropdown-toggle::after{display:none;}
+    /* ── ALERTS ── */
+    .alert-success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:#6ee7b7;border-radius:12px;}
+    /* ── MISC ── */
+    .section-title{color:var(--purple-light);font-weight:700;font-size:1.1rem;}
+    ::-webkit-scrollbar{width:5px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:var(--border-glow);border-radius:3px;}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     TOPBAR
+════════════════════════════════════════════════════ -->
+<div class="topbar">
+  {% if user.is_authenticated %}
+  <button class="hamburger" id="sidebarToggle" aria-label="Open menu">
+    <i class="fas fa-bars"></i>
+  </button>
+  {% endif %}
+  <a class="topbar-brand" href="{% url 'home' %}">🎮 QuestLearn</a>
+
+  <div class="topbar-right">
+    {% if user.is_authenticated %}
+      <span class="xp-pill d-none d-sm-inline">⚡ {{ user.userprofile.xp }} XP</span>
+      <div class="dropdown">
+        <a href="#" class="dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <div class="avatar">{{ user.username|first|upper }}</div>
+          <span class="d-none d-md-inline" style="color:var(--purple-light);font-size:.875rem;font-weight:600;">{{ user.username }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2" style="color:var(--purple-light)"></i>My Profile</a></li>
+          <li><a class="dropdown-item" href="{% url 'skill_dna' %}"><i class="fas fa-dna me-2" style="color:var(--purple-light)"></i>Skill DNA</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'logout' %}" style="color:#f87171;"><i class="fas fa-sign-out-alt me-2"></i>Sign Out</a></li>
+        </ul>
+      </div>
+    {% else %}
+      <a href="{% url 'login' %}" class="btn btn-sm btn-outline-light px-3">Login</a>
+      <a href="{% url 'signup' %}" class="btn btn-sm btn-quest px-3">Sign Up</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if user.is_authenticated %}
+<!-- ═══════════════════════════════════════════════════
+     SIDEBAR OVERLAY
+════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     SIDEBAR DRAWER
+════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- Header -->
+  <div class="sb-header">
+    <span class="sb-brand">🎮 QuestLearn</span>
+    <button class="sb-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+  </div>
+
+  <!-- User mini card -->
+  <div class="sb-user">
+    <div class="avatar" style="width:38px;height:38px;font-size:.95rem;">{{ user.username|first|upper }}</div>
+    <div class="sb-user-info">
+      <div class="name">{{ user.username }}</div>
+      <div class="xp">⚡ {{ user.userprofile.xp }} XP &nbsp;·&nbsp; Lvl {{ user.userprofile.level }}</div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sb-nav">
+
+    <!-- ── MAIN ── -->
+    <div class="sb-section-label">Main</div>
+
+    <a href="{% url 'dashboard' %}" class="sb-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-th-large"></i></span> Dashboard
+    </a>
+    <a href="{% url 'quest_list' %}" class="sb-item {% if request.resolver_match.url_name == 'quest_list' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-scroll"></i></span> Quests
+    </a>
+    <a href="{% url 'mission_list' %}" class="sb-item {% if request.resolver_match.url_name == 'mission_list' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-globe"></i></span> Learning Tracks
+      <span class="sb-badge">New</span>
+    </a>
+    <a href="{% url 'leaderboard' %}" class="sb-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-trophy"></i></span> Leaderboard
+    </a>
+    <a href="{% url 'profile' %}" class="sb-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-user"></i></span> Profile
+    </a>
+
+    <hr class="sb-divider">
+
+    <!-- ── PROGRESS (collapsible) ── -->
+    <div class="sb-group-toggle" id="toggle-progress">
+      <i class="fas fa-chart-line" style="font-size:.75rem;"></i> Progress
+      <i class="fas fa-chevron-down chevron"></i>
+    </div>
+    <div class="sb-group-body" id="body-progress">
+      <a href="{% url 'daily_quest' %}" class="sb-item {% if request.resolver_match.url_name == 'daily_quest' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-fire"></i></span> Daily Quest
+        <span class="sb-badge-hot">🔥</span>
+      </a>
+      <a href="{% url 'xp_wallet' %}" class="sb-item {% if request.resolver_match.url_name == 'xp_wallet' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-wallet"></i></span> XP Wallet
+      </a>
+      <a href="{% url 'skill_dna' %}" class="sb-item {% if request.resolver_match.url_name == 'skill_dna' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-dna"></i></span> Skill DNA
+      </a>
+      <a href="{% url 'achievements' %}" class="sb-item {% if request.resolver_match.url_name == 'achievements' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-medal"></i></span> Achievements
+      </a>
+    </div>
+
+    <hr class="sb-divider">
+
+    <!-- ── COMMUNITY (collapsible) ── -->
+    <div class="sb-group-toggle collapsed" id="toggle-community">
+      <i class="fas fa-users" style="font-size:.75rem;"></i> Community
+      <i class="fas fa-chevron-down chevron"></i>
+    </div>
+    <div class="sb-group-body" id="body-community" style="max-height:0;">
+      <a href="{% url 'friends' %}" class="sb-item {% if request.resolver_match.url_name == 'friends' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-user-friends"></i></span> Friends
+      </a>
+      <a href="{% url 'ai_mentor' %}" class="sb-item {% if request.resolver_match.url_name == 'ai_mentor' %}active{% endif %}">
+        <span class="sb-icon"><i class="fas fa-robot"></i></span> AI Mentor
+      </a>
+    </div>
+
+    <hr class="sb-divider">
+
+    <!-- ── ACCOUNT ── -->
+    <div class="sb-section-label">Account</div>
+    <a href="{% url 'settings' %}" class="sb-item {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+      <span class="sb-icon"><i class="fas fa-cog"></i></span> Settings
+    </a>
+
+  </nav>
+
+  <!-- Footer -->
+  <div class="sb-footer">
+    <a href="{% url 'logout' %}">
+      <i class="fas fa-sign-out-alt"></i> Sign Out
+    </a>
+  </div>
+
+</aside>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════════════ -->
+<div class="main-wrap">
+  <div class="main-content">
+    {% for msg in messages %}
+      <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+        <i class="fas fa-check-circle"></i> {{ msg }}
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" style="filter:invert(1)"></button>
+      </div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('sidebarOverlay');
+  const btnOpen  = document.getElementById('sidebarToggle');
+  const btnClose = document.getElementById('sidebarClose');
+  if (!sidebar) return;
+
+  function open()  { sidebar.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+  function close() { sidebar.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
+
+  btnOpen .addEventListener('click', open);
+  btnClose.addEventListener('click', close);
+  overlay .addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  // ── Collapsible groups ──
+  document.querySelectorAll('.sb-group-toggle').forEach(toggle => {
+    const bodyId = toggle.id.replace('toggle-', 'body-');
+    const body   = document.getElementById(bodyId);
+    if (!body) return;
+
+    // init open state
+    if (!toggle.classList.contains('collapsed')) {
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+
+    toggle.addEventListener('click', () => {
+      const isCollapsed = toggle.classList.toggle('collapsed');
+      body.style.maxHeight = isCollapsed ? '0' : body.scrollHeight + 'px';
+    });
+  });
+
+  // ── Close sidebar on nav item click (mobile) ──
+  document.querySelectorAll('.sb-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (window.innerWidth < 992) close();
+    });
+  });
+})();
+</script>
+</body>
+</html>

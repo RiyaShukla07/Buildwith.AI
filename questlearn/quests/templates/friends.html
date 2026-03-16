@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">👥 Friends</h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:.9rem;">Connect with other learners on QuestLearn.</p>
+  </div>
+</div>
+
+<!-- Search -->
+<div class="card p-4 mb-4" style="border-color:rgba(99,102,241,.2);">
+  <h5 class="mb-3" style="color:var(--text);font-weight:600;">🔍 Find Friends by Username</h5>
+  <form method="GET" class="d-flex gap-2">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search username..." style="border-radius:10px;" maxlength="50">
+    <button type="submit" class="btn btn-quest px-4" style="flex-shrink:0;">Search</button>
+  </form>
+
+  {% if query %}
+  <div class="mt-3">
+    {% if search_results %}
+      <div class="d-flex flex-column gap-2">
+        {% for u in search_results %}
+        <div class="d-flex align-items-center gap-3 p-3" style="background:rgba(99,102,241,.05);border-radius:12px;border:1px solid var(--border);">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;">
+            {{ u.username|first|upper }}
+          </div>
+          <div class="flex-grow-1">
+            <div style="color:var(--text);font-weight:600;font-size:.875rem;">{{ u.username }}</div>
+            <div style="color:var(--text-dim);font-size:.75rem;">Level {{ u.userprofile.level }} · {{ u.userprofile.xp }} XP</div>
+          </div>
+          {% if u in friends_list %}
+            <span style="color:#34d399;font-size:.78rem;font-weight:600;">✓ Friends</span>
+            <a href="{% url 'friend_request_action' 'remove' u.id %}" class="btn btn-sm" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:.75rem;padding:4px 12px;">Remove</a>
+          {% elif u.id in sent_ids %}
+            <span style="color:var(--text-dim);font-size:.78rem;">Request sent</span>
+          {% else %}
+            <a href="{% url 'friend_request_action' 'send' u.id %}" class="btn btn-sm btn-quest" style="font-size:.75rem;padding:4px 14px;">+ Add Friend</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:var(--text-dim);font-size:.85rem;margin:0;">No users found for "{{ query }}".</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Pending requests -->
+{% if pending_received %}
+<div class="card p-4 mb-4" style="border-color:rgba(251,191,36,.2);">
+  <h5 class="mb-3" style="color:var(--text);font-weight:600;">📬 Friend Requests <span style="background:rgba(251,191,36,.2);color:#fbbf24;font-size:.72rem;padding:2px 8px;border-radius:99px;margin-left:6px;">{{ pending_received|length }}</span></h5>
+  <div class="d-flex flex-column gap-2">
+    {% for req in pending_received %}
+    <div class="d-flex align-items-center gap-3 p-3" style="background:rgba(251,191,36,.04);border-radius:12px;border:1px solid rgba(251,191,36,.15);">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;">
+        {{ req.from_user.username|first|upper }}
+      </div>
+      <div class="flex-grow-1">
+        <div style="color:var(--text);font-weight:600;font-size:.875rem;">{{ req.from_user.username }}</div>
+        <div style="color:var(--text-dim);font-size:.75rem;">wants to be your friend</div>
+      </div>
+      <a href="{% url 'friend_request_action' 'accept' req.from_user.id %}" class="btn btn-sm" style="background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25);border-radius:8px;font-size:.75rem;padding:4px 12px;">Accept</a>
+      <a href="{% url 'friend_request_action' 'reject' req.from_user.id %}" class="btn btn-sm" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:.75rem;padding:4px 12px;">Decline</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Friends list -->
+{% if friends_list %}
+<div class="card p-4 mb-4" style="border-color:rgba(52,211,153,.15);">
+  <h5 class="mb-3" style="color:var(--text);font-weight:600;">✅ Your Friends <span style="color:var(--text-dim);font-size:.8rem;font-weight:400;">({{ friends_list|length }})</span></h5>
+  <div class="d-flex flex-column gap-2">
+    {% for u in friends_list %}
+    <div class="d-flex align-items-center gap-3 p-3" style="background:rgba(52,211,153,.04);border-radius:12px;border:1px solid rgba(52,211,153,.12);">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;">
+        {{ u.username|first|upper }}
+      </div>
+      <div class="flex-grow-1">
+        <div style="color:var(--text);font-weight:600;font-size:.875rem;">{{ u.username }}</div>
+        <div style="color:var(--text-dim);font-size:.75rem;">Level {{ u.userprofile.level }} · {{ u.userprofile.xp }} XP</div>
+      </div>
+      <a href="{% url 'friend_request_action' 'remove' u.id %}" class="btn btn-sm" style="background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.15);border-radius:8px;font-size:.72rem;padding:3px 10px;">Remove</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Top learners -->
+<h5 class="section-title mb-3">🌟 Top Learners</h5>
+<div class="card overflow-hidden" style="border-color:rgba(99,102,241,.15);">
+  {% for p in top_users %}
+  <div class="d-flex align-items-center gap-3 px-4 py-3" style="border-bottom:1px solid var(--border);">
+    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;">
+      {{ p.user.username|first|upper }}
+    </div>
+    <div class="flex-grow-1">
+      <div style="color:var(--text);font-weight:600;font-size:.875rem;">
+        {{ p.user.username }}
+        {% if p.user == request.user %}<span style="background:rgba(99,102,241,.2);color:var(--purple-light);font-size:.65rem;padding:2px 7px;border-radius:99px;margin-left:6px;">You</span>{% endif %}
+      </div>
+      <div style="color:var(--text-dim);font-size:.75rem;">Level {{ p.level }}</div>
+    </div>
+    <div style="color:var(--gold);font-weight:700;font-size:.875rem;">⚡ {{ p.xp }} XP</div>
+    {% if p.user != request.user %}
+      {% if p.user in friends_list %}
+        <span style="color:#34d399;font-size:.75rem;font-weight:600;">✓ Friends</span>
+      {% elif p.user.id in sent_ids %}
+        <span style="color:var(--text-dim);font-size:.75rem;">Sent</span>
+      {% else %}
+        <a href="{% url 'friend_request_action' 'send' p.user.id %}" class="btn btn-sm" style="background:rgba(99,102,241,.12);color:var(--purple-light);border:1px solid rgba(99,102,241,.25);border-radius:8px;font-size:.75rem;padding:4px 12px;">+ Add</a>
+      {% endif %}
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

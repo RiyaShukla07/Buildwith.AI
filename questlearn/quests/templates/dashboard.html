@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">👋 Welcome back, <span style="color:var(--purple-light);">{{ request.user.username }}</span></h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;">Keep going — you're on a roll!</p>
+  </div>
+  <a href="{% url 'quest_list' %}" class="btn btn-quest px-4">
+    <i class="fas fa-scroll me-2"></i>All Quests
+  </a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.04));border-color:rgba(99,102,241,0.25);">
+      <div class="d-flex align-items-center gap-3">
+        <div class="stat-icon mb-0" style="background:rgba(99,102,241,0.2);color:#a78bfa;width:48px;height:48px;border-radius:12px;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🏆</div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.78rem;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Level</div>
+          <div style="color:#a78bfa;font-size:1.8rem;font-weight:800;line-height:1.1;">{{ profile.level }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(251,191,36,0.03));border-color:rgba(251,191,36,0.2);">
+      <div class="d-flex align-items-center gap-3">
+        <div style="background:rgba(251,191,36,0.15);color:#fbbf24;width:48px;height:48px;border-radius:12px;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⚡</div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.78rem;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Total XP</div>
+          <div style="color:#fbbf24;font-size:1.8rem;font-weight:800;line-height:1.1;">{{ profile.xp }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(248,113,113,0.1),rgba(248,113,113,0.03));border-color:rgba(248,113,113,0.2);">
+      <div class="d-flex align-items-center gap-3">
+        <div style="background:rgba(248,113,113,0.15);color:#f87171;width:48px;height:48px;border-radius:12px;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🔥</div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.78rem;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Streak</div>
+          <div style="color:#f87171;font-size:1.8rem;font-weight:800;line-height:1.1;">{{ profile.streak }}<span style="font-size:1rem;font-weight:500;"> days</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(52,211,153,0.03));border-color:rgba(52,211,153,0.2);">
+      <div class="d-flex align-items-center gap-3">
+        <div style="background:rgba(52,211,153,0.15);color:#34d399;width:48px;height:48px;border-radius:12px;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⚔️</div>
+        <div>
+          <div style="color:var(--text-muted);font-size:0.78rem;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Quests Left</div>
+          <div style="color:#34d399;font-size:1.8rem;font-weight:800;line-height:1.1;">{{ quests.count }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- XP Progress Bar -->
+<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.04));border-color:rgba(99,102,241,0.2);">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span style="color:var(--purple-light);font-weight:600;font-size:0.9rem;">⚡ XP Progress to Level {{ profile.level|add:1 }}</span>
+    <span style="color:var(--text-muted);font-size:0.82rem;">{{ xp_to_next }} XP remaining</span>
+  </div>
+  <div class="xp-bar">
+    <div class="xp-fill" style="width:{{ xp_percent }}%"></div>
+  </div>
+  <div class="d-flex justify-content-between mt-1">
+    <small style="color:var(--text-dim);">Level {{ profile.level }}</small>
+    <small style="color:var(--text-dim);">Level {{ profile.level|add:1 }}</small>
+  </div>
+</div>
+
+<!-- Available Quests -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="section-title mb-0">⚔️ Available Quests</h5>
+  <a href="{% url 'quest_list' %}" class="btn btn-sm btn-outline-light px-3">View All</a>
+</div>
+
+<div class="row g-3">
+  {% for quest in quests|slice:":6" %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card p-3 h-100 card-hover d-flex flex-column">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge-{{ quest.difficulty }}">{{ quest.difficulty|upper }}</span>
+        <span style="color:var(--text-dim);font-size:0.78rem;">{{ quest.track }}</span>
+      </div>
+      <h6 class="fw-600 mb-1" style="color:var(--text);font-weight:600;font-size:0.95rem;">{{ quest.title }}</h6>
+      <p class="mb-0 flex-grow-1" style="color:var(--text-muted);font-size:0.82rem;line-height:1.5;">{{ quest.description|truncatechars:75 }}</p>
+      <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top:1px solid var(--border);">
+        <span style="color:var(--gold);font-weight:600;font-size:0.88rem;">⚡ {{ quest.xp_reward }} XP</span>
+        <a href="{% url 'quest_play' quest.id %}" class="btn btn-quest btn-sm px-3">Start</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="card p-5 text-center" style="border-style:dashed;">
+      <div style="font-size:3.5rem;margin-bottom:1rem;">🎉</div>
+      <h4 style="color:var(--purple-light);">All quests completed!</h4>
+      <p style="color:var(--text-muted);">You're an absolute legend. Check the leaderboard.</p>
+      <a href="{% url 'leaderboard' %}" class="btn btn-quest mx-auto px-4" style="width:fit-content;">View Leaderboard</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

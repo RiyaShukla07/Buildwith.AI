@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <div>
+    <h2 class="fw-bold mb-1" style="color:var(--text);">🏅 Achievements</h2>
+    <p class="mb-0" style="color:var(--text-muted);font-size:.9rem;">{{ unlocked|length }} of {{ total }} badges unlocked</p>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="card p-4 mb-4" style="border-color:rgba(251,191,36,.2);background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(251,191,36,.02));">
+  <div class="d-flex justify-content-between mb-2">
+    <span style="color:var(--gold);font-weight:600;font-size:.9rem;">🏅 Badge Progress</span>
+    <span style="color:var(--text-muted);font-size:.82rem;">{{ unlocked|length }} / {{ total }}</span>
+  </div>
+  <div class="xp-bar">
+    {% widthratio unlocked|length total 100 as pct %}
+    <div class="xp-fill" style="width:{{ pct }}%;background:linear-gradient(90deg,#fbbf24,#f97316);"></div>
+  </div>
+</div>
+
+<!-- Unlocked -->
+{% if unlocked %}
+<h5 class="section-title mb-3">✅ Unlocked</h5>
+<div class="row g-3 mb-4">
+  {% for b in unlocked %}
+  <div class="col-sm-6 col-lg-4">
+    <div class="card p-3 d-flex flex-row align-items-center gap-3 card-hover" style="border-color:rgba(99,102,241,.25);">
+      <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,{{ b.color }}33,{{ b.color }}11);border:1px solid {{ b.color }}44;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">
+        {{ b.icon }}
+      </div>
+      <div>
+        <div style="color:var(--text);font-weight:600;font-size:.875rem;">{{ b.title }}</div>
+        <div style="color:var(--text-muted);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Locked -->
+{% if locked %}
+<h5 class="mb-3" style="color:var(--text-dim);font-size:1rem;font-weight:600;">🔒 Locked</h5>
+<div class="row g-3">
+  {% for b in locked %}
+  <div class="col-sm-6 col-lg-4">
+    <div class="card p-3 d-flex flex-row align-items-center gap-3" style="opacity:.45;">
+      <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;filter:grayscale(1);">
+        {{ b.icon }}
+      </div>
+      <div>
+        <div style="color:var(--text-muted);font-weight:600;font-size:.875rem;">{{ b.title }}</div>
+        <div style="color:var(--text-dim);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

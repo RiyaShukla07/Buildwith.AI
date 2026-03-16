@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+  <a href="{% url 'quest_list' %}" class="btn btn-sm btn-outline-light px-3">← Back to Quests</a>
+  <span class="badge-{{ quest.difficulty }}" style="font-size:0.8rem;padding:6px 14px;">{{ quest.difficulty|upper }}</span>
+</div>
+
+<!-- Quest Header -->
+<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.04));border-color:rgba(99,102,241,0.25);">
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+    <div>
+      <h2 class="fw-bold mb-2" style="color:var(--text);">{{ quest.title }}</h2>
+      <p class="mb-0" style="color:var(--text-muted);font-size:0.95rem;">{{ quest.description }}</p>
+    </div>
+    <div class="text-end flex-shrink-0">
+      <div style="color:var(--gold);font-size:1.4rem;font-weight:800;">⚡ {{ quest.xp_reward }} XP</div>
+      <div style="color:var(--purple-light);font-size:0.82rem;margin-top:2px;">{{ quest.track }}</div>
+      <span style="background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.25);padding:4px 12px;border-radius:8px;font-size:0.8rem;font-weight:600;display:inline-block;margin-top:8px;">
+        ✓ Completed
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+{% if quest.content %}
+<div class="card p-4 p-md-5" style="border-color:rgba(99,102,241,0.15);">
+  <div class="quest-content">
+    {{ quest.content|linebreaks }}
+  </div>
+</div>
+{% else %}
+<div class="card p-5 text-center" style="border-style:dashed;border-color:var(--border);">
+  <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
+  <h5 style="color:var(--text-muted);">Content coming soon</h5>
+  <p style="color:var(--text-dim);font-size:0.875rem;">The admin hasn't added learning content for this quest yet.</p>
+</div>
+{% endif %}
+
+<style>
+  .quest-content { color: var(--text); line-height: 1.8; font-size: 0.95rem; }
+  .quest-content p { margin-bottom: 1rem; color: var(--text-muted); }
+  .quest-content h2 { color: var(--purple-light); font-size: 1.2rem; font-weight: 700; margin: 1.75rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+  .quest-content h3 { color: var(--text); font-size: 1rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+  .quest-content ul, .quest-content ol { color: var(--text-muted); padding-left: 1.5rem; margin-bottom: 1rem; }
+  .quest-content li { margin-bottom: 0.35rem; }
+  .quest-content code {
+    background: rgba(99,102,241,0.12);
+    color: #a78bfa;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    border: 1px solid rgba(99,102,241,0.2);
+  }
+  .quest-content pre {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+  }
+  .quest-content pre code {
+    background: none;
+    border: none;
+    color: #e2e8f0;
+    padding: 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+  .quest-content strong { color: var(--text); font-weight: 600; }
+</style>
+
+{% endblock %}
