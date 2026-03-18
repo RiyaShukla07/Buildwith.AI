@@ -2,127 +2,65 @@
 {% block content %}
 
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-  <a href="{% url 'mission_list' %}" class="btn btn-sm btn-outline-light px-3">← All Missions</a>
-  <span style="background:rgba(99,102,241,0.15);color:var(--purple-light);border:1px solid rgba(99,102,241,0.25);padding:5px 14px;border-radius:8px;font-size:0.8rem;font-weight:600;">
-    {{ mission.skill }}
-  </span>
+  <a href="{% url 'mission_list' %}" class="btn-ghost" style="padding:6px 14px;font-size:.82rem;">← Missions</a>
+  <span style="background:rgba(99,102,241,.1);color:var(--indigo-2);border:1px solid rgba(99,102,241,.18);padding:3px 9px;border-radius:6px;font-size:.7rem;font-weight:600;">{{ mission.skill }}</span>
 </div>
 
-<!-- Mission Header -->
-<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.04));border-color:rgba(99,102,241,0.25);">
-  <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-    <div>
-      <h2 class="fw-bold mb-2" style="color:var(--text);">{{ mission.title }}</h2>
-      <p class="mb-0" style="color:var(--text-muted);font-size:0.95rem;line-height:1.6;">{{ mission.description }}</p>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(139,92,246,.02));border-color:rgba(99,102,241,.18);">
+      <h2 style="font-size:1.3rem;font-weight:800;letter-spacing:-.4px;color:var(--text);margin-bottom:.4rem;">{{ mission.title }}</h2>
+      <p style="color:var(--text-2);font-size:.875rem;margin-bottom:0;">{{ mission.description }}</p>
     </div>
-    <div class="text-end flex-shrink-0">
-      <div style="color:var(--gold);font-size:1.5rem;font-weight:800;">⚡ {{ mission.xp_reward }} XP</div>
-      <div style="color:var(--text-dim);font-size:0.78rem;margin-top:2px;">awarded after review</div>
+
+    <div class="card p-4 mb-4" style="border-color:rgba(99,102,241,.12);">
+      <h5 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.875rem;">Task</h5>
+      <div style="color:var(--text-2);font-size:.875rem;line-height:1.8;white-space:pre-wrap;">{{ mission.task }}</div>
     </div>
-  </div>
-</div>
 
-<!-- Task Instructions -->
-<div class="card p-4 mb-4">
-  <h5 class="mb-3" style="color:var(--purple-light);">📋 Mission Brief</h5>
-  <div style="color:var(--text-muted);line-height:1.8;font-size:0.93rem;white-space:pre-line;">{{ mission.task }}</div>
-</div>
-
-<!-- Submission Section -->
-{% if existing %}
-  <div class="card p-4" style="border-color:
-    {% if existing.status == 'approved' %}rgba(52,211,153,0.3)
-    {% elif existing.status == 'rejected' %}rgba(248,113,113,0.3)
-    {% else %}rgba(251,191,36,0.3){% endif %};">
-
-    <h5 class="mb-3" style="color:
-      {% if existing.status == 'approved' %}#34d399
-      {% elif existing.status == 'rejected' %}#f87171
-      {% else %}var(--gold){% endif %};">
-      {% if existing.status == 'approved' %}✅ Mission Approved
-      {% elif existing.status == 'rejected' %}❌ Submission Rejected
-      {% else %}⏳ Submission Under Review{% endif %}
-    </h5>
-
-    <div class="row g-3 mb-3">
-      {% if existing.github_link %}
-      <div class="col-md-6">
-        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">GitHub Link</div>
-        <a href="{{ existing.github_link }}" target="_blank" style="color:var(--purple-light);font-size:0.9rem;word-break:break-all;">
-          🔗 {{ existing.github_link }}
-        </a>
+    {% if existing %}
+    <div class="card p-4" style="border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.04);">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="fas fa-check-circle" style="color:var(--emerald-2);"></i>
+        <h5 style="font-size:.9rem;font-weight:700;color:var(--emerald-2);margin:0;">Submitted</h5>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--text-3);">Status:
+          <span style="font-weight:600;color:{% if existing.status == 'approved' %}var(--emerald-2){% elif existing.status == 'rejected' %}var(--rose-2){% else %}var(--amber-2){% endif %};">
+            {{ existing.get_status_display }}
+          </span>
+        </span>
       </div>
-      {% endif %}
-      {% if existing.project_file %}
-      <div class="col-md-6">
-        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Uploaded File</div>
-        <a href="{{ existing.project_file.url }}" target="_blank" style="color:var(--purple-light);font-size:0.9rem;">
-          📁 Download File
-        </a>
-      </div>
-      {% endif %}
-      <div class="col-12">
-        <div style="color:var(--text-muted);font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Your Notes</div>
-        <div style="color:var(--text);font-size:0.9rem;line-height:1.6;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;">
-          {{ existing.notes|default:"No notes provided." }}
+      {% if existing.github_link %}<p style="color:var(--text-2);font-size:.82rem;margin-bottom:.3rem;"><i class="fab fa-github me-1"></i> <a href="{{ existing.github_link }}" target="_blank" style="color:var(--indigo-2);">{{ existing.github_link }}</a></p>{% endif %}
+      {% if existing.notes %}<p style="color:var(--text-2);font-size:.82rem;margin:0;">{{ existing.notes }}</p>{% endif %}
+    </div>
+    {% else %}
+    <div class="card p-4" style="border-color:rgba(99,102,241,.12);">
+      <h5 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:1rem;">Submit your work</h5>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div style="color:var(--rose-2);font-size:.75rem;margin-top:.3rem;">{{ field.errors.as_text }}</div>{% endif %}
         </div>
-      </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary-ql">Submit mission <i class="fas fa-arrow-right" style="font-size:.75rem;"></i></button>
+      </form>
     </div>
-
-    <div style="color:var(--text-dim);font-size:0.78rem;">
-      Submitted {{ existing.submitted_at|date:"M d, Y · H:i" }}
-      {% if existing.reviewed_at %} · Reviewed {{ existing.reviewed_at|date:"M d, Y" }}{% endif %}
-    </div>
-
-    {% if existing.status == 'rejected' %}
-    <hr style="border-color:var(--border);margin:1.25rem 0;">
-    <h6 style="color:var(--text-muted);margin-bottom:1rem;">Resubmit your work</h6>
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {% for field in form %}
-      <div class="mb-3">
-        <label class="form-label">{{ field.label }}</label>
-        {{ field }}
-        {% if field.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ field.errors }}</div>{% endif %}
-      </div>
-      {% endfor %}
-      <button type="submit" class="btn btn-quest px-4">📤 Resubmit Mission</button>
-    </form>
     {% endif %}
   </div>
 
-{% else %}
-  <!-- Submit form -->
-  <div class="card p-4" style="border-color:rgba(99,102,241,0.2);">
-    <h5 class="mb-1" style="color:var(--text);">📤 Submit Your Work</h5>
-    <p class="mb-4" style="color:var(--text-muted);font-size:0.875rem;">Provide a GitHub link, upload your project file, or both. Describe what you built.</p>
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {% if form.non_field_errors %}
-      <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:#fca5a5;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.875rem;">
-        {{ form.non_field_errors }}
+  <div class="col-lg-4">
+    <div class="card p-4" style="border-color:rgba(245,158,11,.15);">
+      <h5 style="font-size:.875rem;font-weight:700;color:var(--text);margin-bottom:1rem;">Reward</h5>
+      <div style="color:var(--amber-2);font-size:1.8rem;font-weight:800;letter-spacing:-1px;"><i class="fas fa-bolt" style="font-size:1.2rem;"></i> {{ mission.xp_reward }}</div>
+      <div style="color:var(--text-3);font-size:.75rem;margin-top:2px;">XP on approval</div>
+      <hr style="border-color:var(--border);margin:1rem 0;">
+      <div style="color:var(--text-2);font-size:.82rem;line-height:1.65;">
+        Submit a GitHub link or upload a file. An admin will review and award XP once approved.
       </div>
-      {% endif %}
-      <div class="mb-3">
-        <label class="form-label">GitHub Repository Link <span style="color:var(--text-dim);">(optional if uploading file)</span></label>
-        {{ form.github_link }}
-        {% if form.github_link.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.github_link.errors }}</div>{% endif %}
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Upload Project File <span style="color:var(--text-dim);">(optional if GitHub link provided)</span></label>
-        {{ form.project_file }}
-        {% if form.project_file.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.project_file.errors }}</div>{% endif %}
-      </div>
-      <div class="mb-4">
-        <label class="form-label">Notes / Description</label>
-        {{ form.notes }}
-        {% if form.notes.errors %}<div style="color:#f87171;font-size:0.8rem;margin-top:4px;">{{ form.notes.errors }}</div>{% endif %}
-      </div>
-      <button type="submit" class="btn btn-quest px-5 py-2" style="font-size:0.95rem;">
-        🚀 Submit Mission
-      </button>
-    </form>
+    </div>
   </div>
-{% endif %}
+</div>
 
 {% endblock %}

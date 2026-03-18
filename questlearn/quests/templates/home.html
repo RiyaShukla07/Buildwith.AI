@@ -1,54 +1,153 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="text-center py-5 mt-2">
-  <!-- Glow orb -->
-  <div style="position:relative;display:inline-block;margin-bottom:1.5rem;">
-    <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:3.5rem;margin:0 auto;box-shadow:0 0 60px rgba(99,102,241,0.4),0 0 120px rgba(99,102,241,0.15);">
-      🎮
+<style>
+  .hero-glow {
+    position: absolute; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,.18) 0%, transparent 70%);
+    top: -200px; left: 50%; transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .feature-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.75rem;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .feature-card:hover {
+    border-color: var(--border-2); transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+  }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1.1rem;
+  }
+  .stat-row { display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+  .stat-lbl { font-size: .78rem; color: var(--text-2); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+</style>
+
+<div style="position:relative; overflow:hidden;">
+  <div class="hero-glow"></div>
+
+  <!-- Hero -->
+  <div class="text-center py-5" style="position:relative;">
+    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:99px;padding:5px 14px;font-size:.75rem;font-weight:600;color:var(--indigo-2);margin-bottom:1.75rem;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--indigo-2);display:inline-block;animation:pulse 2s infinite;"></span>
+      Now in beta — free to join
+    </div>
+
+    <h1 style="font-size:clamp(2.4rem,6vw,4rem);font-weight:900;letter-spacing:-2px;line-height:1.08;margin-bottom:1.25rem;">
+      <span style="color:var(--text);">Learn by doing.</span><br>
+      <span style="background:linear-gradient(135deg,#818cf8,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Level up for real.</span>
+    </h1>
+
+    <p style="color:var(--text-2);font-size:1.1rem;max-width:480px;margin:0 auto 2.25rem;line-height:1.7;">
+      Complete quests, earn XP, and build skills that actually matter — all in one place.
+    </p>
+
+    <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+      <a href="{% url 'signup' %}" class="btn-primary-ql" style="padding:.75rem 2rem;font-size:.95rem;">
+        Start for free <i class="fas fa-arrow-right ms-1" style="font-size:.8rem;"></i>
+      </a>
+      <a href="{% url 'login' %}" class="btn-ghost" style="padding:.75rem 1.75rem;font-size:.95rem;">
+        Sign in
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-row mb-5">
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--indigo-2);">50+</div>
+        <div class="stat-lbl">Quests</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--amber-2);">8</div>
+        <div class="stat-lbl">Skill tracks</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:var(--emerald-2);">13</div>
+        <div class="stat-lbl">Achievements</div>
+      </div>
     </div>
   </div>
 
-  <h1 class="fw-800 mb-3" style="font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,#e2e8f0,#a78bfa,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15;">
-    Level Up Your Learning
-  </h1>
-  <p class="mx-auto mb-5" style="color:var(--text-muted);max-width:520px;font-size:1.1rem;line-height:1.7;">
-    Complete quests, earn XP, unlock levels, and climb the leaderboard. Your learning adventure starts here.
-  </p>
-
-  <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
-    <a href="{% url 'signup' %}" class="btn btn-quest btn-lg px-5 py-3" style="font-size:1rem;">
-      🚀 Start Your Quest
-    </a>
-    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-5 py-3" style="font-size:1rem;border-radius:10px;">
-      ⚡ Login
-    </a>
-  </div>
-
-  <!-- Feature cards -->
-  <div class="row g-4 mx-auto" style="max-width:860px;">
+  <!-- Feature grid -->
+  <div class="row g-3" style="max-width:900px;margin:0 auto;">
     <div class="col-md-4">
-      <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.04));">
-        <div class="stat-icon" style="background:rgba(99,102,241,0.15);color:#a78bfa;">⚔️</div>
-        <h5 class="fw-700 mb-2" style="color:var(--text);font-weight:700;">Complete Quests</h5>
-        <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;">Tackle challenges across Web Dev, Backend, DevOps and more tracks.</p>
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(99,102,241,.12);color:var(--indigo-2);">
+          <i class="fas fa-scroll"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">Structured Quests</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          Step-by-step challenges across Web Dev, Backend, DevOps, Data Science and more.
+        </p>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(251,191,36,0.02));">
-        <div class="stat-icon" style="background:rgba(251,191,36,0.12);color:#fbbf24;">⚡</div>
-        <h5 class="fw-700 mb-2" style="color:var(--text);font-weight:700;">Earn XP & Level Up</h5>
-        <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;">Every quest rewards XP. Collect enough to reach the next level.</p>
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(245,158,11,.1);color:var(--amber-2);">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">XP & Levels</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          Every action earns XP. Watch your level climb and unlock new content as you grow.
+        </p>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card p-4 card-hover h-100" style="background:linear-gradient(135deg,rgba(52,211,153,0.08),rgba(52,211,153,0.02));">
-        <div class="stat-icon" style="background:rgba(52,211,153,0.12);color:#34d399;">🏆</div>
-        <h5 class="fw-700 mb-2" style="color:var(--text);font-weight:700;">Climb the Leaderboard</h5>
-        <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;">Compete with other learners and rise to the top of the rankings.</p>
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(16,185,129,.1);color:var(--emerald-2);">
+          <i class="fas fa-globe"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">Real Missions</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          Build real projects, submit your work, and earn 2–4× more XP than regular quests.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(139,92,246,.12);color:var(--violet-2);">
+          <i class="fas fa-dna"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">Skill DNA</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          Visualize your strengths with a radar chart and GitHub-style activity graph.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(244,63,94,.1);color:var(--rose-2);">
+          <i class="fas fa-fire"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">Daily Quests</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          A fresh challenge every day. Build streaks and stay consistent.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon" style="background:rgba(251,191,36,.1);color:var(--amber-2);">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h5 style="font-weight:700;font-size:.95rem;margin-bottom:.5rem;color:var(--text);">Leaderboard</h5>
+        <p style="color:var(--text-2);font-size:.85rem;line-height:1.65;margin:0;">
+          Compete with other learners and climb the global rankings.
+        </p>
       </div>
     </div>
   </div>
 </div>
 
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+</style>
 {% endblock %}
