@@ -1,150 +1,154 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<!-- Header -->
+<!-- Back + badges -->
 <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-  <a href="{% url 'quest_list' %}" class="btn btn-sm btn-outline-light px-3">← Back to Quests</a>
-  <div class="d-flex gap-2 align-items-center">
-    <span class="badge-{{ quest.difficulty }}">{{ quest.difficulty|upper }}</span>
-    <span style="background:rgba(99,102,241,.12);color:var(--purple-light);border:1px solid rgba(99,102,241,.2);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600;">{{ quest.get_quest_type_display }}</span>
+  <a href="{% url 'quest_list' %}" class="btn-ghost" style="padding:6px 14px;font-size:.82rem;">← Quests</a>
+  <div class="d-flex gap-2">
+    <span class="tag tag-{{ quest.difficulty }}">{{ quest.difficulty|upper }}</span>
+    <span class="tag tag-type">{{ quest.get_quest_type_display }}</span>
   </div>
 </div>
 
-<!-- Quest title -->
-<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.04));border-color:rgba(99,102,241,.25);">
+<!-- Quest header -->
+<div class="card p-4 mb-4" style="background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.03));border-color:rgba(99,102,241,.2);">
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
     <div>
-      <h2 class="fw-bold mb-1" style="color:var(--text);">{{ quest.title }}</h2>
-      <p class="mb-0" style="color:var(--text-muted);font-size:.93rem;">{{ quest.description }}</p>
+      <h2 style="font-size:1.3rem;font-weight:800;letter-spacing:-.4px;color:var(--text);margin-bottom:.35rem;">{{ quest.title }}</h2>
+      <p style="color:var(--text-2);font-size:.875rem;margin:0;">{{ quest.description }}</p>
     </div>
     <div class="text-end flex-shrink-0">
-      <div style="color:var(--gold);font-size:1.3rem;font-weight:800;">⚡ {{ quest.xp_reward }} XP</div>
-      <div style="color:var(--purple-light);font-size:.78rem;">{{ quest.track }}</div>
+      <div style="color:var(--amber-2);font-size:1.2rem;font-weight:800;"><i class="fas fa-bolt" style="font-size:.9rem;"></i> {{ quest.xp_reward }} XP</div>
+      <div style="color:var(--text-3);font-size:.75rem;margin-top:2px;">{{ quest.track }}</div>
     </div>
   </div>
 </div>
 
-<!-- Step progress bar -->
-<div class="card p-3 mb-4" style="border-color:rgba(99,102,241,.15);">
+<!-- Step progress -->
+<div class="card p-3 mb-4" style="border-color:rgba(99,102,241,.12);">
   <div class="d-flex align-items-center gap-2 flex-wrap">
     {% for ss in step_statuses %}
     <div class="d-flex align-items-center gap-2">
-      <div style="display:flex;align-items:center;gap:6px;">
-        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;
-          {% if ss.status == 'done' %}background:rgba(52,211,153,.2);color:#34d399;border:2px solid rgba(52,211,153,.4);
-          {% elif ss.status == 'current' %}background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 0 12px rgba(99,102,241,.5);
-          {% else %}background:rgba(255,255,255,.04);color:var(--text-dim);border:2px solid var(--border);{% endif %}">
-          {% if ss.status == 'done' %}✓{% else %}{{ forloop.counter }}{% endif %}
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;
+          {% if ss.status == 'done' %}background:rgba(16,185,129,.15);color:var(--emerald-2);border:1.5px solid rgba(16,185,129,.3);
+          {% elif ss.status == 'current' %}background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;box-shadow:0 0 10px rgba(99,102,241,.4);
+          {% else %}background:var(--surface-2);color:var(--text-3);border:1.5px solid var(--border);{% endif %}">
+          {% if ss.status == 'done' %}<i class="fas fa-check" style="font-size:.6rem;"></i>{% else %}{{ forloop.counter }}{% endif %}
         </div>
         <span style="font-size:.78rem;font-weight:{% if ss.status == 'current' %}600{% else %}400{% endif %};
-          color:{% if ss.status == 'done' %}#34d399{% elif ss.status == 'current' %}var(--text){% else %}var(--text-dim){% endif %};">
+          color:{% if ss.status == 'done' %}var(--emerald-2){% elif ss.status == 'current' %}var(--text){% else %}var(--text-3){% endif %};">
           {{ ss.step.title }}
         </span>
       </div>
       {% if not forloop.last %}
-      <div style="width:24px;height:2px;background:{% if ss.status == 'done' %}rgba(52,211,153,.4){% else %}var(--border){% endif %};border-radius:2px;flex-shrink:0;"></div>
+      <div style="width:20px;height:1.5px;background:{% if ss.status == 'done' %}rgba(16,185,129,.3){% else %}var(--border){% endif %};border-radius:2px;flex-shrink:0;"></div>
       {% endif %}
     </div>
     {% endfor %}
   </div>
 </div>
 
-<!-- Current step content -->
+<!-- Content + hints -->
 <div class="row g-4">
   <div class="col-lg-8">
-    <div class="card p-4 mb-4" style="border-color:rgba(99,102,241,.2);">
+
+    <!-- Step card -->
+    <div class="card p-4 mb-3" style="border-color:rgba(99,102,241,.15);">
       <div class="d-flex align-items-center gap-2 mb-3">
-        <span style="background:rgba(99,102,241,.15);color:var(--purple-light);border:1px solid rgba(99,102,241,.25);padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:600;">
-          {% if current_step.step_type == 'learning' %}📖 LEARNING
-          {% elif current_step.step_type == 'coding' %}💻 CODING
-          {% else %}❓ QUIZ{% endif %}
+        <span class="tag tag-type">
+          {% if current_step.step_type == 'learning' %}📖 Learning
+          {% elif current_step.step_type == 'coding' %}💻 Coding
+          {% else %}❓ Quiz{% endif %}
         </span>
-        <span style="color:var(--gold);font-size:.8rem;font-weight:600;">+{{ current_step.xp_reward }} XP</span>
+        <span style="color:var(--amber-2);font-size:.78rem;font-weight:600;"><i class="fas fa-bolt" style="font-size:.65rem;"></i> +{{ current_step.xp_reward }} XP</span>
       </div>
-      <h4 class="mb-3" style="color:var(--text);font-weight:700;">{{ current_step.title }}</h4>
-      <div style="color:var(--text-muted);font-size:.93rem;line-height:1.75;white-space:pre-wrap;">{{ current_step.content }}</div>
+      <h4 style="font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.875rem;">{{ current_step.title }}</h4>
+      <div style="color:var(--text-2);font-size:.875rem;line-height:1.8;white-space:pre-wrap;">{{ current_step.content }}</div>
     </div>
 
-    <!-- Submission form -->
-    <div class="card p-4" style="border-color:rgba(99,102,241,.15);">
-      <h5 class="mb-3" style="color:var(--text);font-weight:600;">
-        {% if current_step.step_type == 'learning' %}✅ Mark as Read
-        {% elif current_step.step_type == 'quiz' %}💬 Your Answer
-        {% else %}📤 Submit Your Work{% endif %}
+    <!-- Submission -->
+    <div class="card p-4" style="border-color:rgba(99,102,241,.12);">
+      <h5 style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:1rem;">
+        {% if current_step.step_type == 'learning' %}Mark as read
+        {% elif current_step.step_type == 'quiz' %}Your answer
+        {% else %}Submit your work{% endif %}
       </h5>
 
       {% if prev_submission and not prev_submission.is_correct %}
-      <div class="alert" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#fca5a5;border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.85rem;">
-        ❌ Incorrect — try again or unlock a hint below.
+      <div class="toast-msg error mb-3">
+        <i class="fas fa-times-circle"></i> Incorrect — check the hints and try again.
       </div>
       {% endif %}
 
       <form method="POST" action="{% url 'submit_step' quest.id current_step.id %}">
         {% csrf_token %}
         {% if current_step.step_type == 'learning' %}
-          <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:1rem;">Read the content above, then click to continue.</p>
-          <button type="submit" class="btn btn-quest px-5">Continue →</button>
+          <p style="color:var(--text-2);font-size:.845rem;margin-bottom:1rem;">Read through the content above, then continue.</p>
+          <button type="submit" class="btn-primary-ql">Continue <i class="fas fa-arrow-right" style="font-size:.75rem;"></i></button>
         {% elif current_step.step_type == 'quiz' %}
           <div class="mb-3">
-            <label class="form-label">Your answer</label>
-            <input type="text" name="answer" class="form-control" placeholder="Type your answer here..."
+            <label class="form-label">Answer</label>
+            <input type="text" name="answer" class="form-control" placeholder="Type your answer…"
                    value="{{ prev_submission.answer|default:'' }}" required autocomplete="off">
           </div>
-          <button type="submit" class="btn btn-quest px-5">Submit Answer</button>
+          <button type="submit" class="btn-primary-ql">Submit answer</button>
         {% else %}
           <div class="mb-3">
-            <label class="form-label">GitHub Link <span style="color:var(--text-dim);font-size:.8rem;">(optional)</span></label>
-            <input type="url" name="github_link" class="form-control" placeholder="https://github.com/..."
+            <label class="form-label">GitHub link <span style="color:var(--text-3);font-size:.75rem;">(optional)</span></label>
+            <input type="url" name="github_link" class="form-control" placeholder="https://github.com/…"
                    value="{{ prev_submission.github_link|default:'' }}">
           </div>
           <div class="mb-3">
-            <label class="form-label">Code / Notes <span style="color:var(--text-dim);font-size:.8rem;">(optional)</span></label>
-            <textarea name="answer" class="form-control" rows="5" placeholder="Paste your code or describe your solution...">{{ prev_submission.answer|default:'' }}</textarea>
+            <label class="form-label">Code / notes <span style="color:var(--text-3);font-size:.75rem;">(optional)</span></label>
+            <textarea name="answer" class="form-control" rows="5" placeholder="Paste your code or describe your solution…">{{ prev_submission.answer|default:'' }}</textarea>
           </div>
-          <button type="submit" class="btn btn-quest px-5">Submit</button>
+          <button type="submit" class="btn-primary-ql">Submit</button>
         {% endif %}
       </form>
     </div>
+
   </div>
 
-  <!-- Hints panel -->
+  <!-- Hints -->
   <div class="col-lg-4">
-    <div class="card p-4" style="border-color:rgba(251,191,36,.15);">
-      <h5 class="mb-3" style="color:var(--text);font-weight:600;">💡 Hints
-        <span style="color:var(--text-dim);font-size:.75rem;font-weight:400;">({{ hints|length }} available)</span>
+    <div class="card p-4" style="border-color:rgba(245,158,11,.12);">
+      <h5 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:1rem;">
+        Hints <span style="color:var(--text-3);font-size:.75rem;font-weight:400;">({{ hints|length }})</span>
       </h5>
+
       {% if hints %}
         {% for hint in hints %}
-        <div class="mb-3 p-3 rounded-3" style="border:1px solid {% if hint.id in unlocked_hint_ids %}rgba(52,211,153,.25){% else %}var(--border){% endif %};background:{% if hint.id in unlocked_hint_ids %}rgba(52,211,153,.06){% else %}rgba(255,255,255,.02){% endif %};">
+        <div class="mb-3 p-3" style="border-radius:10px;border:1px solid {% if hint.id in unlocked_hint_ids %}rgba(16,185,129,.2){% else %}var(--border){% endif %};background:{% if hint.id in unlocked_hint_ids %}rgba(16,185,129,.05){% else %}var(--surface-2){% endif %};">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span style="color:var(--text-muted);font-size:.78rem;font-weight:600;">Hint {{ forloop.counter }}</span>
+            <span style="color:var(--text-3);font-size:.72rem;font-weight:600;">Hint {{ forloop.counter }}</span>
             {% if hint.id in unlocked_hint_ids %}
-              <span style="color:#34d399;font-size:.72rem;">✓ Unlocked</span>
+              <span style="color:var(--emerald-2);font-size:.7rem;"><i class="fas fa-check" style="font-size:.6rem;"></i> Unlocked</span>
             {% else %}
-              <span style="color:var(--gold);font-size:.72rem;font-weight:600;">-{{ hint.xp_cost }} XP</span>
+              <span style="color:var(--amber-2);font-size:.72rem;font-weight:600;">−{{ hint.xp_cost }} XP</span>
             {% endif %}
           </div>
           {% if hint.id in unlocked_hint_ids %}
-            <p style="color:var(--text-muted);font-size:.83rem;margin:0;line-height:1.5;">{{ hint.text }}</p>
+            <p style="color:var(--text-2);font-size:.82rem;margin:0;line-height:1.55;">{{ hint.text }}</p>
           {% else %}
-            <p style="color:var(--text-dim);font-size:.8rem;margin:0 0 .5rem;font-style:italic;">Locked — costs {{ hint.xp_cost }} XP to reveal</p>
+            <p style="color:var(--text-3);font-size:.78rem;margin:0 0 .6rem;font-style:italic;">Costs {{ hint.xp_cost }} XP to reveal</p>
             <a href="{% url 'unlock_hint' quest.id current_step.id hint.id %}"
-               class="btn btn-sm px-3" style="background:rgba(251,191,36,.1);color:var(--gold);border:1px solid rgba(251,191,36,.25);border-radius:8px;font-size:.75rem;">
-              🔓 Unlock for {{ hint.xp_cost }} XP
+               style="font-size:.75rem;font-weight:600;color:var(--amber-2);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);padding:4px 11px;border-radius:7px;display:inline-block;">
+              Unlock
             </a>
           {% endif %}
         </div>
         {% endfor %}
       {% else %}
-        <p style="color:var(--text-dim);font-size:.83rem;">No hints for this step.</p>
+        <p style="color:var(--text-3);font-size:.82rem;">No hints for this step.</p>
       {% endif %}
 
-      <!-- XP balance -->
       <div class="mt-3 pt-3" style="border-top:1px solid var(--border);">
-        <div style="color:var(--text-muted);font-size:.78rem;">Your XP balance</div>
-        <div style="color:var(--gold);font-weight:700;font-size:1.1rem;">⚡ {{ profile.xp }} XP</div>
+        <div style="color:var(--text-3);font-size:.72rem;margin-bottom:2px;">Your XP balance</div>
+        <div style="color:var(--amber-2);font-weight:700;font-size:1rem;"><i class="fas fa-bolt" style="font-size:.75rem;"></i> {{ profile.xp }} XP</div>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

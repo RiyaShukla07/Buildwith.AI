@@ -1,14 +1,34 @@
 from django.contrib import admin
 from django.utils import timezone
-from .models import UserProfile, Quest, CompletedQuest, Mission, MissionSubmission, SkillXP, ActivityLog
+from .models import (UserProfile, Quest, CompletedQuest, Mission, MissionSubmission,
+                     SkillXP, ActivityLog, QuestStep, QuestHint, QuestProgress,
+                     StepSubmission, UnlockedHint, FriendRequest)
+
+
+class QuestStepInline(admin.TabularInline):
+    model = QuestStep
+    extra = 1
+
+
+class QuestHintInline(admin.TabularInline):
+    model = QuestHint
+    extra = 1
 
 
 @admin.register(Quest)
 class QuestAdmin(admin.ModelAdmin):
-    list_display  = ['title', 'difficulty', 'xp_reward', 'track']
-    list_filter   = ['difficulty', 'track']
+    list_display  = ['title', 'difficulty', 'quest_type', 'xp_reward', 'track']
+    list_filter   = ['difficulty', 'track', 'quest_type']
     search_fields = ['title']
-    fields        = ['title', 'description', 'content', 'xp_reward', 'difficulty', 'track']
+    filter_horizontal = ['prerequisites']
+    inlines       = [QuestStepInline]
+
+
+@admin.register(QuestStep)
+class QuestStepAdmin(admin.ModelAdmin):
+    list_display  = ['quest', 'order', 'step_type', 'title', 'xp_reward']
+    list_filter   = ['step_type', 'quest']
+    inlines       = [QuestHintInline]
 
 
 @admin.register(UserProfile)
@@ -64,3 +84,7 @@ class MissionSubmissionAdmin(admin.ModelAdmin):
 
 admin.site.register(SkillXP)
 admin.site.register(ActivityLog)
+admin.site.register(QuestProgress)
+admin.site.register(StepSubmission)
+admin.site.register(UnlockedHint)
+admin.site.register(FriendRequest)

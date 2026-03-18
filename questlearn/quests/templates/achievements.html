@@ -1,61 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+
+<div class="d-flex align-items-start justify-content-between mb-5 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1" style="color:var(--text);">🏅 Achievements</h2>
-    <p class="mb-0" style="color:var(--text-muted);font-size:.9rem;">{{ unlocked|length }} of {{ total }} badges unlocked</p>
+    <p style="color:var(--text-2);font-size:.82rem;font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Progress</p>
+    <h1 class="page-title" style="font-size:1.6rem;">Achievements</h1>
+    <p class="page-sub">{{ unlocked|length }}/{{ total }} unlocked</p>
   </div>
+  <a href="{% url 'dashboard' %}" class="btn-ghost">← Dashboard</a>
 </div>
 
 <!-- Progress bar -->
-<div class="card p-4 mb-4" style="border-color:rgba(251,191,36,.2);background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(251,191,36,.02));">
-  <div class="d-flex justify-content-between mb-2">
-    <span style="color:var(--gold);font-weight:600;font-size:.9rem;">🏅 Badge Progress</span>
-    <span style="color:var(--text-muted);font-size:.82rem;">{{ unlocked|length }} / {{ total }}</span>
+<div class="card p-4 mb-5" style="border-color:rgba(99,102,241,.12);">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span style="font-size:.82rem;font-weight:600;color:var(--text-2);">Overall progress</span>
+    <span style="font-size:.78rem;color:var(--text-3);">{{ unlocked|length }} of {{ total }}</span>
   </div>
-  <div class="xp-bar">
-    {% widthratio unlocked|length total 100 as pct %}
-    <div class="xp-fill" style="width:{{ pct }}%;background:linear-gradient(90deg,#fbbf24,#f97316);"></div>
+  <div class="xp-track">
+    <div class="xp-fill" style="width:{% widthratio unlocked|length total 100 %}%"></div>
   </div>
 </div>
 
-<!-- Unlocked -->
 {% if unlocked %}
-<h5 class="section-title mb-3">✅ Unlocked</h5>
-<div class="row g-3 mb-4">
+<h5 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.875rem;">Unlocked</h5>
+<div class="row g-3 mb-5">
   {% for b in unlocked %}
   <div class="col-sm-6 col-lg-4">
-    <div class="card p-3 d-flex flex-row align-items-center gap-3 card-hover" style="border-color:rgba(99,102,241,.25);">
-      <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,{{ b.color }}33,{{ b.color }}11);border:1px solid {{ b.color }}44;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">
-        {{ b.icon }}
-      </div>
+    <div class="card p-3 d-flex flex-row align-items-center gap-3" style="border-color:rgba(99,102,241,.2);background:rgba(99,102,241,.04);">
+      <div style="width:44px;height:44px;border-radius:12px;background:{{ b.color }}18;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">{{ b.icon }}</div>
       <div>
-        <div style="color:var(--text);font-weight:600;font-size:.875rem;">{{ b.title }}</div>
-        <div style="color:var(--text-muted);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
+        <div style="font-weight:700;font-size:.875rem;color:var(--text);">{{ b.title }}</div>
+        <div style="color:var(--text-2);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
       </div>
+      <i class="fas fa-check ms-auto" style="color:var(--emerald-2);font-size:.8rem;flex-shrink:0;"></i>
     </div>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 
-<!-- Locked -->
 {% if locked %}
-<h5 class="mb-3" style="color:var(--text-dim);font-size:1rem;font-weight:600;">🔒 Locked</h5>
+<h5 style="font-size:.9rem;font-weight:700;color:var(--text-2);margin-bottom:.875rem;">Locked</h5>
 <div class="row g-3">
   {% for b in locked %}
   <div class="col-sm-6 col-lg-4">
     <div class="card p-3 d-flex flex-row align-items-center gap-3" style="opacity:.45;">
-      <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;filter:grayscale(1);">
-        {{ b.icon }}
-      </div>
+      <div style="width:44px;height:44px;border-radius:12px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;filter:grayscale(1);">{{ b.icon }}</div>
       <div>
-        <div style="color:var(--text-muted);font-weight:600;font-size:.875rem;">{{ b.title }}</div>
-        <div style="color:var(--text-dim);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
+        <div style="font-weight:700;font-size:.875rem;color:var(--text);">{{ b.title }}</div>
+        <div style="color:var(--text-2);font-size:.75rem;margin-top:2px;">{{ b.desc }}</div>
       </div>
+      <i class="fas fa-lock ms-auto" style="color:var(--text-3);font-size:.75rem;flex-shrink:0;"></i>
     </div>
   </div>
   {% endfor %}
 </div>
 {% endif %}
+
 {% endblock %}

@@ -1,68 +1,80 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+<div class="d-flex align-items-start justify-content-between mb-5 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1" style="color:var(--text);">🏆 Leaderboard</h2>
-    <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;">Top players by XP earned</p>
+    <p style="color:var(--text-2);font-size:.82rem;font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Rankings</p>
+    <h1 class="page-title" style="font-size:1.6rem;">Leaderboard</h1>
+    <p class="page-sub">Top learners by XP earned</p>
   </div>
-  <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light px-3">← Dashboard</a>
+  <a href="{% url 'dashboard' %}" class="btn-ghost">← Dashboard</a>
 </div>
 
-<div class="card overflow-hidden" style="border-color:rgba(99,102,241,0.2);">
-  <div style="background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(139,92,246,0.08));padding:1rem 1.5rem;border-bottom:1px solid var(--border);">
-    <div class="row" style="color:var(--text-muted);font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">
-      <div class="col-1">#</div>
-      <div class="col-5">Player</div>
-      <div class="col-3">Level</div>
-      <div class="col-3">XP</div>
+<!-- Top 3 podium -->
+{% if profiles %}
+<div class="row g-3 mb-4 justify-content-center">
+  {% for p in profiles|slice:":3" %}
+  <div class="col-sm-4" style="order:{% if forloop.counter == 1 %}2{% elif forloop.counter == 2 %}1{% else %}3{% endif %};">
+    <div class="card p-4 text-center {% if p.user == request.user %}card-glow{% endif %}"
+         style="border-color:{% if forloop.counter == 1 %}rgba(245,158,11,.3){% elif forloop.counter == 2 %}rgba(148,163,184,.2){% else %}rgba(180,120,60,.2){% endif %};
+                {% if forloop.counter == 1 %}margin-top:0;{% else %}margin-top:1.5rem;{% endif %}">
+      <div style="font-size:{% if forloop.counter == 1 %}2rem{% else %}1.5rem{% endif %};margin-bottom:.5rem;">
+        {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+      </div>
+      <div class="avatar-xl" style="width:52px;height:52px;font-size:1.1rem;margin:0 auto .75rem;">{{ p.user.username|first|upper }}</div>
+      <div style="font-weight:700;font-size:.9rem;color:var(--text);">
+        {{ p.user.username }}
+        {% if p.user == request.user %}<span style="background:rgba(99,102,241,.15);color:var(--indigo-2);font-size:.62rem;padding:2px 6px;border-radius:99px;font-weight:600;margin-left:4px;">you</span>{% endif %}
+      </div>
+      <div style="color:var(--amber-2);font-weight:700;font-size:.95rem;margin-top:.3rem;"><i class="fas fa-bolt" style="font-size:.7rem;"></i> {{ p.xp }}</div>
+      <div style="color:var(--text-3);font-size:.72rem;margin-top:2px;">Lv {{ p.level }}</div>
     </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Full table -->
+<div class="card" style="border-color:rgba(99,102,241,.12);overflow:hidden;">
+  <div style="padding:.875rem 1.25rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:40px 1fr 80px 90px;gap:.75rem;align-items:center;">
+    <div style="color:var(--text-3);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;">#</div>
+    <div style="color:var(--text-3);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;">Player</div>
+    <div style="color:var(--text-3);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;">Level</div>
+    <div style="color:var(--text-3);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;">XP</div>
   </div>
 
   {% for p in profiles %}
-  <div class="row align-items-center py-3 px-3 mx-0"
-    style="border-bottom:1px solid var(--border);transition:background 0.15s;
-    {% if p.user == request.user %}background:rgba(99,102,241,0.08);border-left:3px solid var(--purple);{% endif %}">
+  <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:40px 1fr 80px 90px;gap:.75rem;align-items:center;
+    {% if p.user == request.user %}background:rgba(99,102,241,.06);border-left:2px solid var(--indigo);{% endif %}
+    transition:background .15s;"
+    onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='{% if p.user == request.user %}rgba(99,102,241,.06){% else %}transparent{% endif %}'">
 
-    <div class="col-1">
-      {% if forloop.counter == 1 %}
-        <span style="font-size:1.3rem;">🥇</span>
-      {% elif forloop.counter == 2 %}
-        <span style="font-size:1.3rem;">🥈</span>
-      {% elif forloop.counter == 3 %}
-        <span style="font-size:1.3rem;">🥉</span>
-      {% else %}
-        <span style="color:var(--text-muted);font-weight:600;font-size:0.9rem;">{{ forloop.counter }}</span>
-      {% endif %}
+    <div style="font-size:.85rem;font-weight:600;color:var(--text-3);">
+      {% if forloop.counter == 1 %}🥇
+      {% elif forloop.counter == 2 %}🥈
+      {% elif forloop.counter == 3 %}🥉
+      {% else %}{{ forloop.counter }}{% endif %}
     </div>
 
-    <div class="col-5 d-flex align-items-center gap-2">
-      <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;flex-shrink:0;">
-        {{ p.user.username|first|upper }}
-      </div>
-      <div>
-        <div style="color:var(--text);font-weight:600;font-size:0.9rem;">
-          {{ p.user.username }}
-          {% if p.user == request.user %}
-            <span style="background:rgba(99,102,241,0.2);color:var(--purple-light);font-size:0.65rem;padding:2px 7px;border-radius:99px;font-weight:600;margin-left:4px;">You</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
-    <div class="col-3">
-      <span style="background:rgba(99,102,241,0.15);color:var(--purple-light);border:1px solid rgba(99,102,241,0.25);padding:3px 10px;border-radius:8px;font-size:0.8rem;font-weight:600;">
-        Lvl {{ p.level }}
+    <div class="d-flex align-items-center gap-2">
+      <div class="avatar" style="width:30px;height:30px;font-size:.72rem;">{{ p.user.username|first|upper }}</div>
+      <span style="font-weight:600;font-size:.875rem;color:var(--text);">
+        {{ p.user.username }}
+        {% if p.user == request.user %}<span style="background:rgba(99,102,241,.15);color:var(--indigo-2);font-size:.62rem;padding:2px 6px;border-radius:99px;font-weight:600;margin-left:4px;">you</span>{% endif %}
       </span>
     </div>
 
-    <div class="col-3" style="color:var(--gold);font-weight:700;font-size:0.95rem;">
-      ⚡ {{ p.xp }}
+    <div>
+      <span style="background:rgba(99,102,241,.1);color:var(--indigo-2);border:1px solid rgba(99,102,241,.2);padding:3px 9px;border-radius:7px;font-size:.75rem;font-weight:600;">Lv {{ p.level }}</span>
+    </div>
+
+    <div style="color:var(--amber-2);font-weight:700;font-size:.875rem;">
+      <i class="fas fa-bolt" style="font-size:.65rem;"></i> {{ p.xp }}
     </div>
   </div>
   {% empty %}
-  <div class="text-center py-5" style="color:var(--text-muted);">
-    No players yet — be the first! 🚀
+  <div class="text-center py-5" style="color:var(--text-2);font-size:.875rem;">
+    No players yet — be the first 🚀
   </div>
   {% endfor %}
 </div>

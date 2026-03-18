@@ -1,63 +1,66 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+
+<div class="d-flex align-items-start justify-content-between mb-5 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1" style="color:var(--text);">⚡ XP Wallet</h2>
-    <p class="mb-0" style="color:var(--text-muted);font-size:.9rem;">Every XP you've ever earned, in one place.</p>
+    <p style="color:var(--text-2);font-size:.82rem;font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Progress</p>
+    <h1 class="page-title" style="font-size:1.6rem;">XP Wallet</h1>
   </div>
+  <a href="{% url 'dashboard' %}" class="btn-ghost">← Dashboard</a>
 </div>
 
 <!-- Summary cards -->
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-5">
   <div class="col-sm-4">
-    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,191,36,.03));border-color:rgba(251,191,36,.2);">
-      <div style="font-size:2rem;">⚡</div>
-      <div style="color:var(--gold);font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ profile.xp }}</div>
-      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">Total XP</div>
+    <div class="card p-4 text-center" style="border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.04);">
+      <div style="color:var(--text-3);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;">Total XP</div>
+      <div style="color:var(--amber-2);font-size:2.2rem;font-weight:800;letter-spacing:-1px;line-height:1;">{{ profile.xp }}</div>
     </div>
   </div>
   <div class="col-sm-4">
-    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.03));border-color:rgba(52,211,153,.2);">
-      <div style="font-size:2rem;">⚔️</div>
-      <div style="color:#34d399;font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ total_from_quests }}</div>
-      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">From Quests</div>
+    <div class="card p-4 text-center" style="border-color:rgba(99,102,241,.15);">
+      <div style="color:var(--text-3);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;">From quests</div>
+      <div style="color:var(--indigo-2);font-size:2.2rem;font-weight:800;letter-spacing:-1px;line-height:1;">{{ total_from_quests }}</div>
     </div>
   </div>
   <div class="col-sm-4">
-    <div class="card p-4 text-center" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.03));border-color:rgba(99,102,241,.2);">
-      <div style="font-size:2rem;">🌍</div>
-      <div style="color:var(--purple-light);font-size:2rem;font-weight:800;line-height:1.1;margin-top:.5rem;">{{ total_from_missions }}</div>
-      <div style="color:var(--text-muted);font-size:.78rem;margin-top:.25rem;">From Missions</div>
+    <div class="card p-4 text-center" style="border-color:rgba(16,185,129,.15);">
+      <div style="color:var(--text-3);font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;">From missions</div>
+      <div style="color:var(--emerald-2);font-size:2.2rem;font-weight:800;letter-spacing:-1px;line-height:1;">{{ total_from_missions }}</div>
     </div>
   </div>
 </div>
 
-<!-- Level progress -->
-<div class="card p-4 mb-4" style="border-color:rgba(99,102,241,.2);">
-  <div class="d-flex justify-content-between mb-2">
-    <span style="color:var(--purple-light);font-weight:600;font-size:.9rem;">Level {{ profile.level }} → Level {{ profile.level|add:1 }}</span>
-    <span style="color:var(--text-muted);font-size:.82rem;">{{ xp_to_next }} XP to go</span>
+<!-- XP bar -->
+<div class="card p-4 mb-5" style="border-color:rgba(99,102,241,.12);">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span style="font-size:.82rem;font-weight:600;color:var(--text-2);">Progress to Level {{ profile.level|add:1 }}</span>
+    <span style="font-size:.75rem;color:var(--text-3);">{{ xp_to_next }} XP to go</span>
   </div>
-  <div class="xp-bar"><div class="xp-fill" style="width:{{ xp_percent }}%"></div></div>
+  <div class="xp-track"><div class="xp-fill" style="width:{{ xp_percent }}%"></div></div>
 </div>
 
-<!-- XP History -->
-<h5 class="section-title mb-3">📜 XP History</h5>
-<div class="card overflow-hidden" style="border-color:rgba(99,102,241,.15);">
+<!-- History -->
+<h5 style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.875rem;">XP history</h5>
+{% if history %}
+<div class="card" style="border-color:rgba(99,102,241,.1);overflow:hidden;">
   {% for item in history %}
-  <div class="d-flex align-items-center gap-3 px-4 py-3" style="border-bottom:1px solid var(--border);">
-    <div style="width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;
-      {% if item.type == 'quest' %}background:rgba(52,211,153,.12);{% else %}background:rgba(99,102,241,.12);{% endif %}">
+  <div class="d-flex align-items-center gap-3 p-3" style="border-bottom:1px solid var(--border);">
+    <div style="width:36px;height:36px;border-radius:9px;background:{% if item.type == 'quest' %}rgba(99,102,241,.12){% else %}rgba(16,185,129,.1){% endif %};display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">
       {% if item.type == 'quest' %}⚔️{% else %}🌍{% endif %}
     </div>
-    <div class="flex-grow-1 overflow-hidden">
-      <div style="color:var(--text);font-weight:500;font-size:.875rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ item.label }}</div>
-      <div style="color:var(--text-dim);font-size:.75rem;">{{ item.track }} · {{ item.date|date:"M d, Y" }}</div>
+    <div style="flex-grow:1;overflow:hidden;">
+      <div style="font-weight:600;font-size:.845rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ item.label }}</div>
+      <div style="color:var(--text-3);font-size:.72rem;margin-top:1px;">{{ item.track }} · {{ item.date|date:"M d, Y" }}</div>
     </div>
-    <div style="color:var(--gold);font-weight:700;font-size:.9rem;flex-shrink:0;">+{{ item.xp }} XP</div>
+    <div style="color:var(--amber-2);font-weight:700;font-size:.875rem;flex-shrink:0;">+{{ item.xp }} XP</div>
   </div>
-  {% empty %}
-  <div class="text-center py-5" style="color:var(--text-muted);">No XP earned yet. Complete a quest to start!</div>
   {% endfor %}
 </div>
+{% else %}
+<div class="card p-5 text-center" style="border-style:dashed;border-color:var(--border-2);">
+  <p style="color:var(--text-2);font-size:.875rem;margin:0;">No XP earned yet — complete a quest to get started.</p>
+</div>
+{% endif %}
+
 {% endblock %}

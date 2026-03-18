@@ -1,67 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+<div class="d-flex align-items-start justify-content-between mb-5 flex-wrap gap-3">
   <div>
-    <h2 class="fw-bold mb-1" style="color:var(--text);">⚔️ All Quests</h2>
-    <p class="mb-0" style="color:var(--text-muted);font-size:0.9rem;">{{ quest_data|length }} quests available</p>
+    <p style="color:var(--text-2);font-size:.82rem;font-weight:500;text-transform:uppercase;letter-spacing:.8px;margin-bottom:.3rem;">Library</p>
+    <h1 class="page-title" style="font-size:1.6rem;">All Quests</h1>
+    <p class="page-sub">{{ quest_data|length }} quests available</p>
   </div>
-  <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-light px-3">← Dashboard</a>
+  <a href="{% url 'dashboard' %}" class="btn-ghost">← Dashboard</a>
 </div>
 
 <div class="row g-3">
   {% for item in quest_data %}
   {% with quest=item.quest %}
   <div class="col-md-6 col-lg-4">
-    <div class="card p-3 h-100 d-flex flex-column {% if not item.unlocked %}card-locked{% endif %} {% if item.completed %}{% else %}card-hover{% endif %}"
-         style="{% if item.completed %}opacity:0.6;{% endif %}{% if not item.unlocked %}opacity:0.45;{% endif %}">
+    <div class="card p-3 h-100 d-flex flex-column {% if item.unlocked and not item.completed %}card-lift{% endif %}"
+         style="{% if item.completed %}opacity:.55;{% elif not item.unlocked %}opacity:.4;{% endif %}">
 
-      <!-- Top row: difficulty + type + track -->
       <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-1">
         <div class="d-flex gap-1 flex-wrap">
-          <span class="badge-{{ quest.difficulty }}">{{ quest.difficulty|upper }}</span>
-          <span style="background:rgba(99,102,241,.12);color:var(--purple-light);border:1px solid rgba(99,102,241,.2);padding:3px 8px;border-radius:6px;font-size:.68rem;font-weight:600;">
-            {{ quest.get_quest_type_display }}
-          </span>
+          <span class="tag tag-{{ quest.difficulty }}">{{ quest.difficulty|upper }}</span>
+          <span class="tag tag-type">{{ quest.get_quest_type_display }}</span>
         </div>
-        <span style="color:var(--text-dim);font-size:0.75rem;">{{ quest.track }}</span>
+        <span style="color:var(--text-3);font-size:.72rem;">{{ quest.track }}</span>
       </div>
 
-      <h6 class="mb-1" style="color:var(--text);font-weight:600;font-size:0.95rem;">{{ quest.title }}</h6>
-      <p class="mb-0 flex-grow-1" style="color:var(--text-muted);font-size:0.82rem;line-height:1.5;">{{ quest.description|truncatechars:90 }}</p>
+      <h6 style="font-weight:600;font-size:.9rem;color:var(--text);margin-bottom:.35rem;">{{ quest.title }}</h6>
+      <p style="color:var(--text-2);font-size:.8rem;line-height:1.55;flex-grow:1;margin:0;">{{ quest.description|truncatechars:90 }}</p>
 
-      <!-- Step progress indicator -->
       {% if item.step_count > 0 and item.unlocked and not item.completed %}
-      <div class="mt-2">
-        <div class="d-flex gap-1">
-          {% for i in item.step_count|rjust:item.step_count %}{% endfor %}
-        </div>
-        <div style="color:var(--text-dim);font-size:.72rem;margin-top:3px;">
-          {{ item.completed_steps }}/{{ item.step_count }} steps done
-        </div>
+      <div class="mt-2" style="color:var(--text-3);font-size:.72rem;">
+        {{ item.completed_steps }}/{{ item.step_count }} steps completed
       </div>
       {% endif %}
 
-      <!-- Prerequisites warning -->
       {% if not item.unlocked %}
-      <div class="mt-2 d-flex align-items-center gap-2" style="color:var(--text-dim);font-size:.75rem;">
-        🔒 Complete prerequisites first
+      <div class="mt-2" style="color:var(--text-3);font-size:.75rem;">
+        <i class="fas fa-lock" style="font-size:.65rem;"></i> Complete prerequisites first
       </div>
       {% endif %}
 
-      <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top:1px solid var(--border);">
-        <span style="color:var(--gold);font-weight:600;font-size:0.88rem;">⚡ {{ quest.xp_reward }} XP</span>
+      <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top:1px solid var(--border);">
+        <span style="color:var(--amber-2);font-weight:600;font-size:.82rem;"><i class="fas fa-bolt" style="font-size:.7rem;"></i> {{ quest.xp_reward }} XP</span>
         {% if item.completed %}
-          <a href="{% url 'quest_detail' quest.id %}" class="btn btn-sm px-3"
-             style="background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25);border-radius:8px;font-weight:600;">
-            📖 View Content
+          <a href="{% url 'quest_detail' quest.id %}" style="font-size:.78rem;font-weight:600;color:var(--emerald-2);background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);padding:4px 12px;border-radius:8px;">
+            ✓ View
           </a>
         {% elif item.unlocked %}
-          <a href="{% url 'quest_play' quest.id %}" class="btn btn-quest btn-sm px-3">
+          <a href="{% url 'quest_play' quest.id %}" class="btn-primary-ql" style="padding:5px 14px;font-size:.78rem;">
             {% if item.progress %}Continue{% else %}Start{% endif %}
           </a>
         {% else %}
-          <span class="btn btn-sm px-3" style="background:rgba(255,255,255,.04);color:var(--text-dim);border:1px solid var(--border);border-radius:8px;cursor:not-allowed;">🔒 Locked</span>
+          <span style="font-size:.78rem;color:var(--text-3);background:var(--surface-2);border:1px solid var(--border);padding:4px 12px;border-radius:8px;cursor:not-allowed;">
+            <i class="fas fa-lock" style="font-size:.65rem;"></i> Locked
+          </span>
         {% endif %}
       </div>
     </div>
@@ -69,10 +61,10 @@
   {% endwith %}
   {% empty %}
   <div class="col-12">
-    <div class="card p-5 text-center" style="border-style:dashed;">
-      <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
-      <h4 style="color:var(--text-muted);">No quests yet</h4>
-      <p style="color:var(--text-dim);">Ask an admin to seed some quests!</p>
+    <div class="card p-5 text-center" style="border-style:dashed;border-color:var(--border-2);">
+      <div style="font-size:2.5rem;margin-bottom:.75rem;">📭</div>
+      <h5 style="color:var(--text);font-weight:700;margin-bottom:.4rem;">No quests yet</h5>
+      <p style="color:var(--text-2);font-size:.875rem;">Ask an admin to add some quests.</p>
     </div>
   </div>
   {% endfor %}
